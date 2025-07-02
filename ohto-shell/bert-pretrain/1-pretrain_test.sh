@@ -115,13 +115,13 @@ host="${HOSTNAME}" # This will be the hostname of the node running this script (
 jobname="bert-full-pubmed-30000"
 
 # BLEND DATASET
-pubmed_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pubmed/pubmed_30000/pubmed_text_document"
+pubmed_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pubmed/pubmed_30000-1024/pubmed_text_document"
 weight_pubmed=1.0
-pmc_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pmc/pubmed_30000/pmc_text_document"
+pmc_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pmc/pubmed_30000-1024/pmc_text_document"
 weight_pmc=0.0
-fda_label_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/fda_label/pubmed_30000/fda_label_text_document"
+fda_label_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/fda_label/pubmed_30000-1024/fda_label_text_document"
 weight_fda_label=0.0
-nih_books_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/nih_books/pubmed_30000/nih_books_text_document"
+nih_books_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/nih_books/pubmed_30000-1024/nih_books_text_document"
 weight_nih_books=0.0
 # Combine the datasets into a single data path
 data_path="${weight_pubmed} ${pubmed_path} ${weight_pmc} ${pmc_path} ${weight_fda_label} ${fda_label_path} ${weight_nih_books} ${nih_books_path}"
