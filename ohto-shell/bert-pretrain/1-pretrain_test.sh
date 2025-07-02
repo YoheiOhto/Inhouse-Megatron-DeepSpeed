@@ -23,7 +23,7 @@ dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspee
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=100
+global_batch_size=64
 lr=1e-4
 min_lr=1e-5
 
