@@ -1,545 +1,584 @@
+# # Copyright (C) 2024 Habana Labs, Ltd. an Intel Company.
+# # Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved.
+
+# """A self-contained, highly-configurable, modernized BERT model for Megatron-LM."""
+
+# import torch
+# import torch.nn.functional as F
+# import numbers
+# import inspect
+
+# from megatron import get_args
+# from megatron.core import tensor_parallel
+# from megatron.core.utils import make_viewless_tensor
+# from megatron.model.module import MegatronModule
+# from megatron.model.language_model import parallel_lm_logits
+# from megatron.model.utils import get_linear_layer, init_method_normal
+# # [修正] 標準的なLayerNormも使う可能性があるのでimportしておく
+# from megatron.model import LayerNorm
+
+# from deepspeed.runtime.zero import GatheredParameters
+
+# # Apexのimport部分はそのまま
+# try:
+#     from apex.contrib.layer_norm.layer_norm import FastLayerNormFN
+#     from apex.normalization.fused_layer_norm import FusedLayerNormAffineFunction
+#     HAVE_APEX = True
+# except ImportError:
+#     print("Warning: Apex is not installed. High-performance LayerNorm will not be available.")
+#     HAVE_APEX = False
+
+# if not HAVE_APEX: raise ImportError("Apex is required to use MixedFusedLayerNorm.")
+
+# # flash-attnのimport部分はそのまま
+# try:
+#     from flash_attn import flash_attn_func
+# except ImportError:
+#     print("Warning: flash-attn is not installed. It is required for HybridFlashAttention.")
+#     flash_attn_func = None
+    
+# from megatron.model.rotary_pos_embedding import RotaryEmbedding, apply_rotary_pos_emb
+
+# def backward_hook_checker(module, grad_input, grad_output):
+#     module_name = module.__class__.__name__
+#     print(f"\n>>> Backward hook fired for: [{module_name}]")
+    
+#     for i, grad in enumerate(grad_output):
+#         if grad is None:
+#             print(f"  - grad_output[{i}] is None! <--- check this grad！")
+#         else:
+#             print(f"  - grad_output[{i}].shape: {grad.shape}, grad.mean(): {grad.abs().mean():.2e}, grad.std(): {grad.std():.2e}")
+
+
+# # inspired by megatron.core.fused_layer_norm
+# class BiaslessMixedFusedLayerNorm(torch.nn.Module):
+#     def __init__(self, normalized_shape, eps=1e-5, sequence_parallel=False, no_persist_layer_norm=True, mem_efficient_ln=True):
+#         super().__init__()
+#         if not HAVE_APEX: raise ImportError("Apex is required to use MixedFusedLayerNorm.")
+#         persist_ln_hidden_sizes = [1024, 1536, 2048, 2304, 3072, 3840, 4096, 5120, 6144, 8192, 10240, 12288, 12800, 15360, 16384, 18432, 20480, 24576, 25600, 30720, 32768, 40960, 49152, 65536]
+#         if normalized_shape not in persist_ln_hidden_sizes: no_persist_layer_norm = True
+#         if isinstance(normalized_shape, numbers.Integral): normalized_shape = (normalized_shape,)
+#         self.normalized_shape = torch.Size(normalized_shape)
+#         self.eps = eps
+#         self.sequence_parallel = sequence_parallel
+#         self.no_persist_layer_norm = no_persist_layer_norm
+#         self.mem_efficient_ln = mem_efficient_ln
+#         self.weight = torch.nn.Parameter(torch.empty(*self.normalized_shape, dtype=get_args().params_dtype))
+#         self.register_buffer('bias', torch.zeros(*self.normalized_shape, dtype=get_args().params_dtype), persistent=False)
+#         self.reset_parameters()
+#         setattr(self.weight, 'sequence_parallel', self.sequence_parallel)
+#     def reset_parameters(self):
+#         torch.nn.init.ones_(self.weight)
+#     def forward(self, input):
+#         if not input.is_cuda: return F.layer_norm(input, self.normalized_shape, self.weight, self.bias, self.eps)
+#         if self.no_persist_layer_norm:
+#             if 'memory_efficient' in inspect.getfullargspec(FusedLayerNormAffineFunction.forward).args:
+#                 return FusedLayerNormAffineFunction.apply(input, self.weight, self.bias, self.normalized_shape, self.eps, self.mem_efficient_ln)
+#             else:
+#                 return FusedLayerNormAffineFunction.apply(input, self.weight, self.bias, self.normalized_shape, self.eps)
+#         else:
+#             output = FastLayerNormFN.apply(input, self.weight, self.bias, self.eps)
+#             return make_viewless_tensor(inp=output, requires_grad=input.requires_grad, keep_graph=True)
+
+
+# class GeGLUMLP(MegatronModule):
+#     def __init__(self, config):
+#         super().__init__()
+#         self.dense_h_to_4h_gated = tensor_parallel.ColumnParallelLinear(config.hidden_size, config.ffn_hidden_size * 2, config=config, init_method=config.init_method, bias=False)
+#         self.dense_4h_to_h = tensor_parallel.RowParallelLinear(config.ffn_hidden_size, config.hidden_size, config=config, init_method=config.output_layer_init_method, bias=False, input_is_parallel=True)
+#     def forward(self, hidden_states):
+#         gated_output, _ = self.dense_h_to_4h_gated(hidden_states)
+#         x1, x2 = torch.chunk(gated_output, 2, dim=-1)
+#         intermediate = F.gelu(x1) * x2
+#         output, _ = self.dense_4h_to_h(intermediate)
+#         return output
+
+# class HybridFlashAttention(MegatronModule):
+#     def __init__(self, config, is_global):
+#         super().__init__()
+#         if flash_attn_func is None: raise RuntimeError("flash-attn is not installed.")
+#         self.config = config
+#         self.is_global = is_global
+#         self.local_window_size = getattr(config, 'local_window_size', 256)
+#         self.qkv_proj = tensor_parallel.ColumnParallelLinear(config.hidden_size, config.hidden_size * 3, config=config, init_method=config.init_method, bias=False)
+#         self.dense = tensor_parallel.RowParallelLinear(config.hidden_size, config.hidden_size, config=config, init_method=config.output_layer_init_method, bias=False, input_is_parallel=True)
+
+#     def forward(self, hidden_states, rotary_pos_emb):
+#         s, b = hidden_states.size(0), hidden_states.size(1)
+#         mixed_qkv_layer, _ = self.qkv_proj(hidden_states)
+#         (query_layer, key_layer, value_layer) = torch.split(
+#             mixed_qkv_layer, self.config.hidden_size, dim=-1)
+#         nh = self.config.num_attention_heads
+#         hd = self.config.kv_channels
+#         new_shape = (s, b, nh, hd)
+#         query_layer = query_layer.view(new_shape)
+#         key_layer = key_layer.view(new_shape)
+#         value_layer = value_layer.view(new_shape)
+        
+#         # [デバッグ修正] RoPEの適用を一時的に無効化し、原因を調査します
+#         # cos_emb, _ = rotary_pos_emb
+#         # if cos_emb.dim() == 4:
+#         #     cos_emb = cos_emb.squeeze(1).squeeze(1)
+#         # freqs = torch.acos(cos_emb)
+#         # freqs = freqs.unsqueeze(1).unsqueeze(1)
+#         # query_layer = apply_rotary_pos_emb(query_layer, freqs)
+#         # key_layer = apply_rotary_pos_emb(key_layer, freqs)
+
+#         query_layer = query_layer.transpose(0, 1)
+#         key_layer = key_layer.transpose(0, 1)
+#         value_layer = value_layer.transpose(0, 1)
+        
+#         attn_output = F.scaled_dot_product_attention(
+#             query_layer, 
+#             key_layer, 
+#             value_layer, 
+#             attn_mask=None,
+#             is_causal=False
+#         )
+#         attn_output = attn_output.transpose(0, 1).contiguous()
+#         attn_output = attn_output.reshape(hidden_states.shape)
+#         output, _ = self.dense(attn_output)
+#         return output
+
+
+# class ModernTransformerLayer(MegatronModule):
+#     def __init__(self, config, layer_number, global_attn_every_n_layers):
+#         super().__init__()
+#         self.input_layernorm = BiaslessMixedFusedLayerNorm(config.hidden_size, eps=config.layernorm_epsilon, sequence_parallel=config.sequence_parallel)
+#         self.post_attention_layernorm = BiaslessMixedFusedLayerNorm(config.hidden_size, eps=config.layernorm_epsilon, sequence_parallel=config.sequence_parallel)
+#         self.is_global = (layer_number + 1) % global_attn_every_n_layers == 0
+#         self.attention = HybridFlashAttention(config, is_global=self.is_global)
+#         self.mlp = GeGLUMLP(config)
+
+#     def forward(self, hidden_states, rotary_pos_emb_global, rotary_pos_emb_local):
+#         rotary_to_use = rotary_pos_emb_global if self.is_global else rotary_pos_emb_local
+#         residual = hidden_states
+#         normalized_states = self.input_layernorm(hidden_states)
+#         attention_output = self.attention(normalized_states, rotary_to_use)
+#         hidden_states = residual + attention_output
+#         residual = hidden_states
+#         normalized_states = self.post_attention_layernorm(hidden_states)
+#         mlp_output = self.mlp(normalized_states)
+#         hidden_states = residual + mlp_output
+#         return hidden_states
+
+# # get_linear_layer_custom はそのまま
+# def get_linear_layer_custom(rows, columns, init_method, bias=True, gather_params_on_init=False):
+#     layer = torch.nn.Linear(rows, columns, bias=bias)
+#     args = get_args()
+#     if args.perform_initialization:
+#         with GatheredParameters(layer.weight, modifier_rank=0, enabled=gather_params_on_init):
+#             init_method(layer.weight)
+#     if bias:
+#         with torch.no_grad():
+#             with GatheredParameters(layer.bias, modifier_rank=0, enabled=gather_params_on_init):
+#                 layer.bias.zero_()
+#     return layer
+
+# class ModernBertLMHead(MegatronModule):
+#     def __init__(self, mpu_vocab_size, hidden_size, config, parallel_output):
+#         super().__init__(config=config)
+#         self.parallel_output = parallel_output
+#         self.bias = torch.nn.Parameter(torch.zeros(mpu_vocab_size))
+#         tensor_parallel.set_tensor_model_parallel_attributes(self.bias, True, 0, 1)
+#         self.dense = get_linear_layer_custom(hidden_size, hidden_size, config.init_method, bias=False)
+#         self.layernorm = BiaslessMixedFusedLayerNorm(hidden_size, eps=config.layernorm_epsilon, sequence_parallel=config.sequence_parallel)
+#         self.gelu = F.gelu
+#     def forward(self, hidden_states, word_embeddings_weight):
+#         hidden_states = self.dense(hidden_states)
+#         hidden_states = self.gelu(hidden_states)
+#         hidden_states = self.layernorm(hidden_states)
+#         output = parallel_lm_logits(hidden_states, word_embeddings_weight, self.parallel_output, bias=self.bias)
+#         return output
+
+
+# class ModernBertModel(MegatronModule):
+#     def __init__(self, config, num_tokentypes=2, parallel_output=True):
+#         super().__init__(config=config)
+#         args = get_args()
+#         self.fp16_lm_cross_entropy = args.fp16_lm_cross_entropy
+        
+#         self.word_embeddings = tensor_parallel.VocabParallelEmbedding(args.padded_vocab_size, config.hidden_size, config=config, init_method=config.init_method)
+#         self.embedding_layernorm = BiaslessMixedFusedLayerNorm(config.hidden_size, eps=config.layernorm_epsilon, sequence_parallel=config.sequence_parallel)
+#         self.embedding_dropout = torch.nn.Dropout(config.hidden_dropout)
+
+#         rotary_dim = config.kv_channels or (config.hidden_size // config.num_attention_heads)
+#         self.rotary_pos_emb_global = RotaryEmbedding(rotary_dim, theta=args.global_rope_theta)
+#         self.rotary_pos_emb_local = RotaryEmbedding(rotary_dim, theta=args.local_rope_theta)
+        
+#         self.transformer_layers = torch.nn.ModuleList(
+#             [ModernTransformerLayer(config, i, args.global_attn_every_n_layers) for i in range(config.num_layers)]
+#         )
+#         self.lm_head = ModernBertLMHead(args.padded_vocab_size, config.hidden_size, config, parallel_output)
+        
+#         # Backward hook はデバッグ用にコメントアウトされたままにしておきます
+#         # self.register_full_backward_hook(backward_hook_checker)
+
+#     def set_input_tensor(self, input_tensor):
+#         pass
+
+#     def forward(self, input_ids, tokentype_ids=None, lm_labels=None):
+#         # ステップ1: Embedding層と最初のLayerNorm
+#         word_embeds = self.word_embeddings(input_ids)
+#         embeddings = word_embeds
+#         hidden_states = self.embedding_layernorm(embeddings)
+#         hidden_states = self.embedding_dropout(hidden_states)
+
+#         hidden_states = hidden_states.transpose(0, 1).contiguous()
+        
+#         seq_len = hidden_states.size(0)
+#         rotary_pos_emb_global = self.rotary_pos_emb_global(seq_len)
+#         rotary_pos_emb_local = self.rotary_pos_emb_local(seq_len)
+        
+#         # =================================================================
+#         # >>>>>>>>>>>>>>>>>>>> [LayerNorm2回問題の修正] <<<<<<<<<<<<<<<<<<<<
+#         # =================================================================
+#         # 1層目の処理をループの外に出し、input_layernorm をスキップする
+        
+#         first_layer = self.transformer_layers[0]
+#         rotary_to_use = rotary_pos_emb_global if first_layer.is_global else rotary_pos_emb_local
+        
+#         # 1層目のAttentionブロック
+#         residual = hidden_states
+#         # `embedding_layernorm` の出力をそのまま使う (first_layer.input_layernormをスキップ)
+#         attention_output = first_layer.attention(hidden_states, rotary_to_use)
+#         hidden_states = residual + attention_output
+        
+#         # 1層目のMLPブロック
+#         residual = hidden_states
+#         normalized_states = first_layer.post_attention_layernorm(hidden_states)
+#         mlp_output = first_layer.mlp(normalized_states)
+#         hidden_states = residual + mlp_output
+
+#         # 2層目以降の処理 (通常通り、内部でinput_layernormが適用される)
+#         if len(self.transformer_layers) > 1:
+#             for layer in self.transformer_layers[1:]:
+#                 hidden_states = layer(hidden_states, rotary_pos_emb_global, rotary_pos_emb_local)
+#         # =================================================================
+        
+#         # ステップ4: LM Head
+#         lm_logits = self.lm_head(hidden_states, self.word_embeddings.weight)
+
+#         # ステップ5: loss計算 or logits返却 (この部分は変更なし)
+#         if lm_labels is None:
+#             return lm_logits.transpose(0, 1).contiguous()
+#         else:
+#             lm_labels_s_b = lm_labels.transpose(0, 1).contiguous()
+#             if self.fp16_lm_cross_entropy:
+#                 assert lm_logits.dtype == torch.half
+#                 loss_per_token_s_b = tensor_parallel.vocab_parallel_cross_entropy(
+#                     lm_logits, lm_labels_s_b)
+#             else:
+#                 loss_per_token_s_b = tensor_parallel.vocab_parallel_cross_entropy(
+#                     lm_logits.float(), lm_labels_s_b)
+#             loss_per_token_b_s = loss_per_token_s_b.transpose(0, 1).contiguous()
+#             return loss_per_token_b_s
+
+#     def state_dict_for_save_checkpoint(self, prefix='', keep_vars=False):
+#         return super().state_dict(prefix=prefix, keep_vars=keep_vars)
+    
+#     def load_state_dict(self, state_dict, strict=True):
+#         super().load_state_dict(state_dict, strict=strict)
+
+# Copyright (C) 2024 Habana Labs, Ltd. an Intel Company.
 # Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved.
 
-"""BERT model."""
+"""
+[デバッグ用・標準BERT構成版]
+クラス名はそのままに、内部を一般的なBERTのコンポーネントに置き換えたモデル。
+"""
 
 import torch
-import torch.nn as nn # Added for nn.ModuleList, nn.Parameter
-import torch.nn.functional as F # Added for F.gelu, F.softmax
-import math # Added for math.sqrt
+import torch.nn.functional as F
+import numbers
 
 from megatron import get_args
 from megatron.core import tensor_parallel
-from megatron.model.enums import AttnMaskType
+from megatron.model.module import MegatronModule
 from megatron.model.language_model import parallel_lm_logits
-from megatron.model import LayerNorm
-from megatron.model.utils import openai_gelu, erf_gelu
-from megatron.model.utils import get_linear_layer
-from megatron.model.utils import init_method_normal
-from megatron.model.utils import scaled_init_method_normal
-from .module import MegatronModule
+from megatron.model import LayerNorm # 標準のLayerNormをメインで使用
 
-from megatron.core.tensor_parallel.layers import ColumnParallelLinear, RowParallelLinear
+# --- 各クラスの「中身」を標準的な実装に置き換えます ---
 
-try:
-    from flash_attn import flash_attn_qkvpacked_func, flash_attn_varlen_qkvpacked_func
-    from flash_attn.layers.rotary import RotaryEmbedding, apply_rotary_emb
-    flash_attn_available = True
-except ImportError:
-    flash_attn_available = False
-    RotaryEmbedding = None
-    apply_rotary_emb = None
-    print("WARNING: flash_attn is not available. Using PyTorch attention fallback. "
-          "Rotary Embedding and Sliding Window Attention will NOT be efficiently applied if flash_attn is missing.")
+class BiaslessMixedFusedLayerNorm(MegatronModule):
+    def __init__(self, normalized_shape, eps=1e-5, sequence_parallel=False, **kwargs):
+        super().__init__()
+        self.layer_norm = LayerNorm(normalized_shape, eps=eps, sequence_parallel=sequence_parallel)
+
+    def forward(self, input):
+        return self.layer_norm(input)
 
 
-def bert_extended_attention_mask(attention_mask):
-    # We create a 3D attention mask from a 2D tensor mask.
-    # [b, 1, s]
-    attention_mask_b1s = attention_mask.unsqueeze(1)
-    # [b, s, 1]
-    attention_mask_bs1 = attention_mask.unsqueeze(2)
-    # [b, s, s]
-    attention_mask_bss = attention_mask_b1s * attention_mask_bs1
-    # [b, 1, s, s]
-    extended_attention_mask = attention_mask_bss.unsqueeze(1)
-
-    # Convert attention mask to binary:
-    # True indicates masked, False indicates unmasked (attend to)
-    extended_attention_mask = (extended_attention_mask < 0.5)
-
-    return extended_attention_mask
-
-def bert_position_ids(token_ids):
-    # Create position ids
-    seq_length = token_ids.size(1)
-    position_ids = torch.arange(seq_length, dtype=torch.long,
-                                device=token_ids.device)
-    position_ids = position_ids.unsqueeze(0).expand_as(token_ids)
-
-    return position_ids
-
-
-class BertLMHead(MegatronModule):
-    """Masked LM head for Bert
-
-    Arguments:
-        config: TransformerConfig object
-        mpu_vocab_size: model parallel size of vocabulary.
-        hidden_size: hidden size
-        parallel_output: whether output logits being distributed or not.
+class GeGLUMLP(MegatronModule):
     """
+    [修正] クラス名はそのままに、内部を標準的なMLP(GELU)に変更。
+    """
+    def __init__(self, config):
+        super().__init__(config=config)
+        self.dense_h_to_4h = tensor_parallel.ColumnParallelLinear(
+            config.hidden_size, config.ffn_hidden_size,
+            config=config, init_method=config.init_method, bias=True)
+        self.dense_4h_to_h = tensor_parallel.RowParallelLinear(
+            config.ffn_hidden_size, config.hidden_size,
+            config=config, init_method=config.output_layer_init_method, bias=True, input_is_parallel=True)
 
+    def forward(self, hidden_states):
+        intermediate, _ = self.dense_h_to_4h(hidden_states)
+        intermediate = F.gelu(intermediate)
+        output, _ = self.dense_4h_to_h(intermediate)
+        return output
+
+
+class HybridFlashAttention(MegatronModule):
+    """
+    [修正] クラス名はそのままに、内部を標準的なSelf-Attentionに変更 (次元修正版)
+    """
+    def __init__(self, config, **kwargs):
+        super().__init__(config=config)
+        self.qkv_proj = tensor_parallel.ColumnParallelLinear(
+            config.hidden_size, 3 * config.hidden_size,
+            config=config, init_method=config.init_method, bias=True)
+        self.dense = tensor_parallel.RowParallelLinear(
+            config.hidden_size, config.hidden_size,
+            config=config, init_method=config.output_layer_init_method, bias=True, input_is_parallel=True)
+
+    def forward(self, hidden_states, attention_mask):
+        # hidden_states: [s, b, h] (シーケンス長, バッチサイズ, 隠れ層サイズ)
+        s, b, h = hidden_states.shape
+        mixed_qkv_layer, _ = self.qkv_proj(hidden_states)
+        (query_layer, key_layer, value_layer) = torch.split(
+            mixed_qkv_layer, self.config.hidden_size, dim=-1)
+
+        nh = self.config.num_attention_heads
+        hd = self.config.hidden_size // nh
+        
+        # テンソルの形状を (s, b, nh, hd) に変形
+        query_layer = query_layer.view(s, b, nh, hd)
+        key_layer = key_layer.view(s, b, nh, hd)
+        value_layer = value_layer.view(s, b, nh, hd)
+
+        # [修正] scaled_dot_product_attentionが期待する (b, nh, s, hd) の形状に並べ替え
+        query_layer = query_layer.permute(1, 2, 0, 3)
+        key_layer = key_layer.permute(1, 2, 0, 3)
+        value_layer = value_layer.permute(1, 2, 0, 3)
+
+        # attention_mask は [b, 1, s, s] の形状を期待される
+        context_layer = F.scaled_dot_product_attention(
+            query_layer, key_layer, value_layer,
+            attn_mask=attention_mask, is_causal=False)
+
+        # [修正] 元の (s, b, h) の形状に戻すための並べ替えと変形
+        context_layer = context_layer.permute(2, 0, 1, 3).contiguous()
+        context_layer = context_layer.view(s, b, h)
+        
+        output, _ = self.dense(context_layer)
+        return output
+
+
+class ModernTransformerLayer(MegatronModule):
+    """
+    [修正] 標準部品を使うように内部を修正。forwardの引数も変更。
+    """
+    def __init__(self, config, layer_number, global_attn_every_n_layers):
+        super().__init__(config=config)
+        self.input_layernorm = BiaslessMixedFusedLayerNorm(config.hidden_size, eps=config.layernorm_epsilon, sequence_parallel=config.sequence_parallel)
+        self.post_attention_layernorm = BiaslessMixedFusedLayerNorm(config.hidden_size, eps=config.layernorm_epsilon, sequence_parallel=config.sequence_parallel)
+        self.attention = HybridFlashAttention(config)
+        self.mlp = GeGLUMLP(config)
+
+    def forward(self, hidden_states, attention_mask):
+        # Attention Block (Pre-LN)
+        residual = hidden_states
+        layernorm_output = self.input_layernorm(hidden_states)
+        attention_output = self.attention(layernorm_output, attention_mask)
+        hidden_states = residual + attention_output
+        
+        # MLP Block (Pre-LN)
+        residual = hidden_states
+        layernorm_output = self.post_attention_layernorm(hidden_states)
+        mlp_output = self.mlp(layernorm_output)
+        hidden_states = residual + mlp_output
+        return hidden_states
+
+
+class ModernBertLMHead(MegatronModule):
+    """[修正] 内部のLayerNormを標準版クラス(をラップしたもの)に変更"""
     def __init__(self, mpu_vocab_size, hidden_size, config, parallel_output):
         super().__init__(config=config)
-
         args = get_args()
         self.bias = torch.nn.Parameter(torch.zeros(mpu_vocab_size))
         tensor_parallel.set_tensor_model_parallel_attributes(self.bias, True, 0, 1)
         self.parallel_output = parallel_output
-
-        self.dense = get_linear_layer(hidden_size, hidden_size, config.init_method, gather_params_on_init=args.zero_stage == 3)
-        setattr(self.dense.weight, 'sequence_parallel', config.sequence_parallel)
-        setattr(self.dense.bias, 'sequence_parallel', config.sequence_parallel)
-
-        self.layernorm = LayerNorm(hidden_size,
-                                   eps=config.layernorm_epsilon,
-                                   sequence_parallel=config.sequence_parallel)
-        self.gelu = torch.nn.functional.gelu
-        if args.openai_gelu:
-            self.gelu = openai_gelu
-        elif args.onnx_safe:
-            self.gelu = erf_gelu
-
+        self.dense = torch.nn.Linear(hidden_size, hidden_size)
+        # [修正] torch.nn.Linearを使いつつ、sequence_parallel属性をセットする
+        self.dense = torch.nn.Linear(hidden_size, hidden_size)
+        if config.sequence_parallel:
+            setattr(self.dense.weight, 'sequence_parallel', True)
+            setattr(self.dense.bias, 'sequence_parallel', True)
+            print(f"[ModernBertLMHead] sequence_parallel属性をセットしました: {self.dense.weight.sequence_parallel}, {self.dense.bias.sequence_parallel}")
+        self.layernorm = BiaslessMixedFusedLayerNorm(hidden_size, eps=config.layernorm_epsilon, sequence_parallel=config.sequence_parallel)
+        self.gelu = F.gelu
     def forward(self, hidden_states, word_embeddings_weight):
         hidden_states = self.dense(hidden_states)
         hidden_states = self.gelu(hidden_states)
         hidden_states = self.layernorm(hidden_states)
-        output = parallel_lm_logits(hidden_states,
-                                    word_embeddings_weight,
-                                    self.parallel_output,
-                                    bias=self.bias)
+        output = parallel_lm_logits(hidden_states, word_embeddings_weight, self.parallel_output, bias=self.bias)
         return output
 
-def post_language_model_processing(lm_output, pooled_output,
-                                   lm_head, binary_head,
-                                   lm_labels,
-                                   logit_weights,
-                                   fp16_lm_cross_entropy):
-    lm_logits = lm_head(
-        lm_output, logit_weights)
-
-    binary_logits = None
-    if binary_head is not None:
-        binary_logits = binary_head(pooled_output)
-
-    if lm_labels is None:
-        # [s b h] => [b s h]
-        return lm_logits.transpose(0,1).contiguous(), binary_logits
-    else:
-        # [b s] => [s b]
-        lm_labels = lm_labels.transpose(0,1).contiguous()
-        # lm_logits : [s, b, h] and lm_labels: [s, b]
-        if fp16_lm_cross_entropy:
-            assert lm_logits.dtype == torch.half
-            lm_loss = tensor_parallel.vocab_parallel_cross_entropy(lm_logits, lm_labels)
-        else:
-            lm_loss = tensor_parallel.vocab_parallel_cross_entropy(lm_logits.float(),
-                                                         lm_labels)
-        # [s, b] => [b s]
-        lm_loss = lm_loss.transpose(0,1).contiguous()
-        return lm_loss, binary_logits
-
-class GeGLU(MegatronModule):
-    def __init__(self, hidden_size, ffn_hidden_size, config):
-        super().__init__(config=config)
-        args = get_args()
-
-        self.proj = ColumnParallelLinear(
-            hidden_size,
-            ffn_hidden_size * 2,
-            gather_output=False,
-            init_method=config.init_method,
-            bias=False,
-            sequence_parallel=config.sequence_parallel
-        )
-        self.output_proj = RowParallelLinear(
-            ffn_hidden_size,
-            hidden_size,
-            input_is_parallel=True,
-            init_method=config.output_layer_init_method,
-            bias=False,
-            sequence_parallel=config.sequence_parallel
-        )
-
-    def forward(self, x):
-        x_proj = self.proj(x)
-        x, gate = x_proj.chunk(2, dim=-1)
-        return self.output_proj(x * F.gelu(gate))
-
-class CustomSelfAttention(MegatronModule):
-    def __init__(self, hidden_size, num_heads, config, rotary_emb_dim=None, rotary_theta=10000.0, attention_window_size=(-1, -1)):
-        super().__init__(config=config)
-        args = get_args()
-
-        self.hidden_size = hidden_size
-        self.num_heads = num_heads
-        self.num_heads_parallel = num_heads // tensor_parallel.get_model_parallel_world_size()
-        self.head_dim = hidden_size // num_heads
-
-        self.qkv_proj = ColumnParallelLinear(
-            hidden_size,
-            hidden_size * 3,
-            gather_output=False,
-            init_method=config.init_method,
-            bias=False,
-            sequence_parallel=config.sequence_parallel
-        )
-        self.out_proj = RowParallelLinear(
-            hidden_size,
-            hidden_size,
-            input_is_parallel=True,
-            init_method=config.output_layer_init_method,
-            bias=False,
-            sequence_parallel=config.sequence_parallel
-        )
-
-        self.rotary_emb = None
-        if rotary_emb_dim is None:
-            rotary_emb_dim = self.head_dim
-        
-        if args.use_rotary_position_embeddings:
-            if flash_attn_available:
-                self.rotary_emb = RotaryEmbedding(rotary_emb_dim, theta=rotary_theta)
-                print(f"INFO: Rotary Embedding enabled with dimension {rotary_emb_dim} and theta {rotary_theta}.")
-            else:
-                print("WARNING: flash_attn not available. Rotary Embedding will not be applied.")
-        else:
-            print("INFO: Rotary Embedding is disabled by args.")
-
-        self.attention_window_size = attention_window_size
-        if self.attention_window_size == (-1, -1):
-            print("INFO: CustomSelfAttention will use global attention (window_size=(-1,-1)).")
-        else:
-            print(f"INFO: CustomSelfAttention will use sliding window attention: {self.attention_window_size}")
-
-
-    def forward(self, x, attention_mask=None):
-        # x: [seq_len, batch_size, hidden_size]
-        
-        qkv = self.qkv_proj(x) # [seq_len, batch_size, 3 * hidden_size_parallel]
-        
-        # Flash Attentionの入力形式に合わせる: [batch_size, seq_len, 3, num_heads_parallel, head_dim]
-        # x.shape[0] は seq_len, x.shape[1] は batch_size
-        qkv_reshaped = qkv.view(x.shape[0], x.shape[1], 3, self.num_heads_parallel, self.head_dim)
-        qkv_reshaped = qkv_reshaped.permute(1, 0, 2, 3, 4).contiguous() # [batch_size, seq_len, 3, num_heads_parallel, head_dim]
-
-        # Rotary Embeddingの適用
-        if self.rotary_emb is not None:
-            q, k = qkv_reshaped[:, :, 0], qkv_reshaped[:, :, 1]
-            cos, sin = self.rotary_emb(q)
-            q, k = apply_rotary_emb(q, k, cos, sin)
-            v = qkv_reshaped[:, :, 2]
-            qkv_reshaped = torch.stack([q, k, v], dim=2)
-
-        if flash_attn_available:
-            if attention_mask is not None:
-                # extended_attention_mask is [B, 1, S, S], True for masked.
-                # Let's infer the original [B, S] mask where True means valid token (not masked)
-                original_2d_attention_mask_bool = ~attention_mask[:, 0, :, 0] # [B, S] boolean, True for valid tokens
-                
-                seqlens = original_2d_attention_mask_bool.long().sum(dim=1) # [B]
-                cu_seqlens = torch.cat([torch.zeros(1, dtype=torch.int32, device=x.device), seqlens.cumsum(0, dtype=torch.int32)])
-                max_seqlen_in_batch = seq_len # Max sequence length in current batch (assuming fixed-size here)
-            else:
-                # If no attention_mask is provided (e.g., all sequences are full length and valid)
-                batch_size = x.shape[1]
-                seq_len = x.shape[0]
-                cu_seqlens = torch.arange(0, (batch_size + 1) * seq_len, seq_len, dtype=torch.int32, device=x.device)
-                max_seqlen_in_batch = seq_len
-
-
-            # qkv_reshaped is [batch_size, seq_len, 3, num_heads_parallel, head_dim]
-            # flash_attn_varlen_qkvpacked_func expects [total_tokens, 3, num_heads_parallel, head_dim]
-            qkv_flattened = qkv_reshaped.view(-1, 3, self.num_heads_parallel, self.head_dim)
-
-            attn_output_flattened = flash_attn_varlen_qkvpacked_func(
-                qkv_flattened,
-                cu_seqlens,
-                max_seqlen_in_batch,
-                causal=getattr(self.config, 'causal_attention', False), # configからcausal設定を取得 (BERTは通常False)
-                window_size=self.attention_window_size,
-                return_attn_probs=False # アテンション確率は返さない
-            )
-            # Flatten された出力を元の形状に戻す [seq_len, batch_size, hidden_size_parallel]
-            attn_output = attn_output_flattened.view(seq_len, batch_size, -1)
-            
-        else:
-            q, k, v = qkv_reshaped[:,:,0], qkv_reshaped[:,:,1], qkv_reshaped[:,:,2]
-            q = q.transpose(1, 2)
-            k = k.transpose(1, 2)
-            v = v.transpose(1, 2)
-
-            attn_scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.head_dim)
-            if attention_mask is not None:
-                # extended_attention_mask は [b, 1, s, s] の形式で、True でマスク
-                attn_scores = attn_scores.masked_fill(attention_mask.squeeze(1).unsqueeze(1).bool(), -10000.0)
-            
-            attn_probs = F.softmax(attn_scores, dim=-1)
-            attn_output = torch.matmul(attn_probs, v)
-            attn_output = attn_output.transpose(1, 2).contiguous().view(x.shape[0], x.shape[1], -1)
-
-        return self.out_proj(attn_output)
-
-
-class CustomTransformerLayer(MegatronModule):
-    def __init__(self, config, layer_idx,
-                 hidden_size, num_attention_heads, ffn_hidden_size):
-        super().__init__(config=config)
-        
-        self.layer_idx = layer_idx # 0-indexed
-
-        self.norm1 = LayerNorm(hidden_size,
-                               eps=config.layernorm_epsilon,
-                               sequence_parallel=config.sequence_parallel)
-        self.norm2 = LayerNorm(hidden_size,
-                               eps=config.layernorm_epsilon,
-                               sequence_parallel=config.sequence_parallel)
-
-        # アテンション層のタイプとRoPE thetaの決定ロジック
-        current_attn_window_size = (-1, -1) # デフォルトはグローバルアテンション
-        current_rope_theta = 10000.0 # デフォルトのtheta
-
-        # config.global_attn_every_n_layers が設定されている場合
-        if hasattr(config, 'global_attn_every_n_layers') and config.global_attn_every_n_layers > 0:
-            if not hasattr(config, 'sliding_window') or config.sliding_window == -1:
-                raise ValueError("`global_attn_every_n_layers` requires `sliding_window` to be set (e.g., to 4096).")
-            
-            # layer_id が global_attn_every_n_layers の倍数でない場合、ローカルアテンション (sliding window)
-            if self.layer_idx % config.global_attn_every_n_layers != 0:
-                # config.sliding_window は単一の整数を想定 (例: 4096)
-                current_attn_window_size = (config.sliding_window // 2, config.sliding_window // 2)
-                current_rope_theta = getattr(config, 'local_attn_rope_theta', 10000.0)
-                print(f"INFO: Layer {layer_idx} (Local) uses sliding window attention: {current_attn_window_size} with theta {current_rope_theta}")
-            else:
-                # layer_id が global_attn_every_n_layers の倍数の場合、グローバルアテンション
-                current_attn_window_size = (-1, -1) # FlashAttentionでグローバルアテンションを意味する
-                current_rope_theta = getattr(config, 'global_attn_rope_theta', 10000.0)
-                print(f"INFO: Layer {layer_idx} (Global) uses global attention with theta {current_rope_theta}")
-        else:
-            # global_attn_every_n_layers が設定されていない場合、すべての層でグローバルアテンション
-            current_rope_theta = getattr(config, 'global_attn_rope_theta', 10000.0)
-            print(f"INFO: Layer {layer_idx} (Default Global) uses global attention with theta {current_rope_theta}")
-
-        self.attn = CustomSelfAttention(
-            hidden_size=hidden_size,
-            num_heads=num_attention_heads,
-            config=config,
-            rotary_emb_dim=config.rotary_emb_dim if hasattr(config, 'rotary_emb_dim') else None,
-            rotary_theta=current_rope_theta,
-            attention_window_size=current_attn_window_size # 設定したウィンドウサイズを渡す
-        )
-
-        # GeGLU (FFN部分)
-        self.ffn = GeGLU(
-            hidden_size=hidden_size,
-            ffn_hidden_size=ffn_hidden_size,
-            config=config
-        )
-
-    def forward(self, x, attention_mask):
-        # Pre-LN 適用
-        attn_input = self.norm1(x)
-        attention_output = self.attn(attn_input, attention_mask=attention_mask)
-    
-        x = x + attention_output
-        ffn_input = self.norm2(x)
-        ffn_output = self.ffn(ffn_input)
-        
-        # 残差接続
-        x = x + ffn_output
-
-        return x
-
-
-class CustomBertEncoder(MegatronModule):
-    def __init__(self, config, num_layers):
-        super().__init__(config=config)
-        self.layers = nn.ModuleList()
-        
-        for i in range(num_layers):
-            self.layers.append(
-                CustomTransformerLayer(
-                    config=config,
-                    layer_idx=i,
-                    hidden_size=config.hidden_size,
-                    num_attention_heads=config.num_attention_heads,
-                    ffn_hidden_size=config.ffn_hidden_size
-                )
-            )
-        # Pooler for BERT's NSP head
-        self.pooler = None
-        if config.add_pooler: # This usually comes from get_language_model's add_pooler arg
-             self.pooler = get_linear_layer(config.hidden_size, config.hidden_size, config.init_method,
-                                            gather_params_on_init=get_args().zero_stage == 3)
-             setattr(self.pooler.weight, 'sequence_parallel', config.sequence_parallel)
-             setattr(self.pooler.bias, 'sequence_parallel', config.sequence_parallel)
-
-    def forward(self, hidden_states, attention_mask):
-        # Initial hidden_states comes from word_embeddings (shape: [seq_len, batch_size, hidden_size])
-        
-        for layer in self.layers:
-            hidden_states = layer(hidden_states, attention_mask)
-        
-        pooled_output = None
-        if self.pooler is not None:
-            # Take the first token's (CLS token) representation
-            first_token_output = hidden_states[0, :, :] # [batch_size, hidden_size]
-            pooled_output = self.pooler(first_token_output)
-            pooled_output = torch.tanh(pooled_output)
-        
-        # Return pooled_output for NSP head, and hidden_states for LM head
-        return hidden_states, pooled_output, 0.0 # Moe loss is 0.0 as there are no MoE layers here
-
-    def set_input_tensor(self, input_tensor):
-        # For pipeline parallelism
-        self.input_tensor = input_tensor
 
 class ModernBertModel(MegatronModule):
-    """Bert Language model."""
-
-    def __init__(self,
-                 config,
-                 num_tokentypes=2,
-                 add_binary_head=True,
-                 parallel_output=True,
-                 pre_process=True,
-                 post_process=True,
-                 return_moe_loss=False):
+    def __init__(self, config, num_tokentypes=2, parallel_output=True):
         super().__init__(config=config)
         args = get_args()
-
-        # TODO this option is not yet implemented in BERT
-        assert args.untie_embeddings_and_output_weights is False
-
         self.fp16_lm_cross_entropy = args.fp16_lm_cross_entropy
-        self.add_binary_head = add_binary_head
-        self.parallel_output = parallel_output
-        self.pre_process = pre_process
-        self.post_process = post_process
-        self.return_moe_loss = return_moe_loss
+        
+        self.word_embeddings = tensor_parallel.VocabParallelEmbedding(args.padded_vocab_size, config.hidden_size, config=config, init_method=config.init_method)
+        self.position_embeddings = torch.nn.Embedding(args.max_position_embeddings, config.hidden_size)
+        
+        self.embedding_layernorm = BiaslessMixedFusedLayerNorm(config.hidden_size, eps=config.layernorm_epsilon, sequence_parallel=config.sequence_parallel)
+        self.embedding_dropout = torch.nn.Dropout(config.hidden_dropout)
 
-        self.return_embeddings = args.output_bert_embeddings
-        if self.return_embeddings:
-            assert self.post_process and self.add_binary_head
-
-        config.add_pooler = self.add_binary_head 
-
-
-        # Using CustomBertEncoder instead of get_language_model
-        self.language_model = CustomBertEncoder(
-            config=config,
-            num_layers=config.num_hidden_layers
+        self.transformer_layers = torch.nn.ModuleList(
+            [ModernTransformerLayer(config, i, 1) for i in range(config.num_layers)]
         )
-        self._language_model_key = 'language_model'
+        self.lm_head = ModernBertLMHead(args.padded_vocab_size, config.hidden_size, config, parallel_output)
+        # self.token_type_embeddings = torch.nn.Embedding(num_tokentypes, config.hidden_size)
 
-        self.initialize_word_embeddings()
-        if self.post_process:
-            self.lm_head = BertLMHead(self.shared_embedding_or_output_weight().size(0), config.hidden_size,
-                                      config, parallel_output)
-            self._lm_head_key = 'lm_head'
-            self.binary_head = None
-            if self.add_binary_head:
-                self.binary_head = get_linear_layer(config.hidden_size, 2,
-                                                    config.init_method,
-                                                    args.zero_stage == 3)
-                self._binary_head_key = 'binary_head'
-            self.final_layernorm = LayerNorm(config.hidden_size,
-                                             eps=config.layernorm_epsilon,
-                                             sequence_parallel=config.sequence_parallel)
-
+    def _get_extended_attention_mask(self, attention_mask):
+        attention_mask_b1s = attention_mask.unsqueeze(1)
+        attention_mask_bs1 = attention_mask.unsqueeze(2)
+        attention_mask_bss = attention_mask_b1s * attention_mask_bs1
+        extended_attention_mask = attention_mask_bss.unsqueeze(1)
+        return (extended_attention_mask < 0.5)
 
     def set_input_tensor(self, input_tensor):
-        """See megatron.model.transformer.set_input_tensor()"""
-        # This will be called by pipeline parallelism if enabled
-        self.language_model.set_input_tensor(input_tensor)
+        pass
 
-    def forward(self, bert_model_input, attention_mask,
-                tokentype_ids=None, lm_labels=None):
+    def forward(self, input_ids, attention_mask, tokentype_ids=None, lm_labels=None):
+        # =================================================================
+        # >>>>>>>>>>>>>>>>>>>> [デバッグコード] <<<<<<<<<<<<<<<<<<<<
+        # =================================================================
+        # =======================【拡張デバッグコード】=========================
+        # --- word_embeddings の入力チェック ---
+        print("--- input_ids check ---")
+        print(f"Shape: {input_ids.shape}, Dtype: {input_ids.dtype}")
+        print(f"Min: {input_ids.min().item()}, Max: {input_ids.max().item()}")
+        print(f"Vocab Size: {self.word_embeddings.weight.shape[0]}")
 
-        extended_attention_mask = bert_extended_attention_mask(attention_mask)
-        input_ids = bert_model_input
-        position_ids = bert_position_ids(input_ids)
+        word_embeds = self.word_embeddings(input_ids)
 
-        # Word embeddings (managed by MegatronModule)
-        word_embeddings = self.word_embeddings(input_ids, position_ids, tokentype_ids)
+        # --- position_embeddings の入力チェック ---
+        seq_length = input_ids.size(1)
+        position_ids = torch.arange(seq_length, dtype=torch.long, device=input_ids.device).unsqueeze(0)
+        print("\n--- position_ids check ---")
+        print(f"Shape: {position_ids.shape}, Dtype: {position_ids.dtype}")
+        print(f"Min: {position_ids.min().item()}, Max: {position_ids.max().item()}")
+        print(f"Max Position Embeddings: {self.position_embeddings.weight.shape[0]}")
 
-        # Pass word_embeddings to our custom encoder
-        # CustomBertEncoder returns (hidden_states, pooled_output, moe_losses)
-        lm_output, pooled_output, moe_losses = self.language_model(
-            word_embeddings,
-            attention_mask=extended_attention_mask # Pass the extended mask for CustomSelfAttention
-        )
+        position_embeds = self.position_embeddings(position_ids)
 
-        # Apply final LayerNorm to LM output
-        lm_output = self.final_layernorm(lm_output)
+        # --- tokentype_embeddings の入力チェック (既存のコード) ---
+        if tokentype_ids is None:
+            tokentype_ids = torch.zeros_like(input_ids)
+        print("\n--- tokentype_ids check ---")
+        print(f"Shape: {tokentype_ids.shape}, Dtype: {tokentype_ids.dtype}")
+        # print(f"Min: {tokentype_ids.min().item()}, Max: {tokentype_ids.max().item()}")
+        # print(f"Token Type Embedding Size: {self.token_type_embeddings.weight.shape[0]}")
 
-        if self.post_process:
-            # pooled_output is now returned directly from CustomBertEncoder
-            # The original BertModel had logic to compute it here based on lm_output[0, :, :]
-            # This is now handled by CustomBertEncoder's self.pooler
+        print("------------------------------------------\n")
+        # =================================================================
 
-            if self.return_embeddings:
-                # Sum attention mask (original 2D mask, not extended_attention_mask)
-                # Here, we assume original `attention_mask` is [B, S] binary (1 for valid, 0 for padded)
-                # If you only have `extended_attention_mask` as input, you might need to infer it.
-                # For this example, let's assume `attention_mask` still refers to the original [B,S] mask.
-                embeddings = torch.transpose(lm_output, 0, 1) # [B, S, H]
-                masks = torch.sum(attention_mask, dim=1) # [B] -> count of valid tokens
-
-                # Collect masked embeddings.
-                output = torch.zeros(
-                    size=(embeddings.shape[0], embeddings.shape[2]),
-                    dtype=torch.float32,
-                    device=torch.cuda.current_device())
-                for i, (embedding, mask) in enumerate(zip(embeddings, masks)):
-                    # Average pooling excluding CLS token (index 0) and padding
-                    # BERT typically averages all non-padding tokens or uses CLS.
-                    # The original `return_embeddings` was mean of [1:mask-1] for CLS.
-                    # Adjust if needed for your specific embedding pooling strategy.
-                    output[i, :] = torch.mean(embedding[1: mask], dim=0) 
-
-                return output # Only embedding output if return_embeddings is True
-
-            # Process LM logits and binary logits
-            lm_output_processed = post_language_model_processing(
-                lm_output, pooled_output,
-                self.lm_head, self.binary_head,
-                lm_labels,
-                self.shared_embedding_or_output_weight(),
-                self.fp16_lm_cross_entropy
-            )
+        if 'mask_validated' not in globals():
+            globals()['mask_validated'] = True  # この検証を1回だけ実行するためのフラグ
             
-            # Return moe_losses if required
-            if self.return_moe_loss:
-                return (*lm_output_processed, moe_losses) # Combine lm_loss/logits, binary_logits, moe_losses
+            print("\n" + "="*50)
+            print("      Attention Mask の検証（最初の1ステップ）")
+            print("="*50)
+            
+            # 渡されてきたattention_mask（=padding_mask）の形状と中身を確認
+            print(f"\nInput attention_mask shape (batch): {attention_mask.shape}")
+            print(f"Input attention_mask (sample 0):\n{attention_mask[0].tolist()}")
+
+            # 内部で変換された extended_attention_mask の形状と中身を確認
+            extended_attention_mask = self._get_extended_attention_mask(attention_mask)
+            print(f"\nExtended attention_mask shape: {extended_attention_mask.shape}")
+            print(f"Extended attention_mask (top-left 10x10 slice of sample 0):\n{extended_attention_mask[0, 0, :10, :10].cpu().numpy()}")
+            
+            # attention_maskで実際にパディングが始まっている位置を確認
+            pad_start_index = (attention_mask[0] == 0).nonzero(as_tuple=True)[0]
+            if pad_start_index.numel() > 0:
+                print(f"\nSample 0 のパディング開始位置: index {pad_start_index[0].item()}")
             else:
-                return lm_output_processed # Return lm_loss/logits, binary_logits
+                print("\nSample 0 にはパディングがありません。")
+
+            print("\n" + "="*50)
+            # import sys; sys.exit("マスク検証のため終了") # 必要に応じてコメントを外してプログラムを止める
+        # =================================================================
+        # >>>>>>>>>>>>>>>>>>>> デバッグコードここまで <<<<<<<<<<<<<<<<<<<<<<<<<
+        # =================================================================
+        
+        # attention_maskからextended_attention_maskを再生成（デバッグコード内で一度実行済みのため）
+        extended_attention_mask = self._get_extended_attention_mask(attention_mask)
+
+        # Embedding層
+        word_embeds = self.word_embeddings(input_ids)
+        
+        # Position Embeddingの追加
+        seq_length = input_ids.size(1)
+        position_ids = torch.arange(seq_length, dtype=torch.long, device=input_ids.device).unsqueeze(0)
+        position_embeds = self.position_embeddings(position_ids)
+
+        if tokentype_ids is None:
+            # デフォルトで全て0（単一セグメント）のテンソルを作成
+            tokentype_ids = torch.zeros_like(input_ids)
+
+        # 3つの埋め込みを足し合わせる
+        embeddings = word_embeds + position_embeds
+        # =======================【追加のデバッグコード】=========================
+        print("\n--- embeddings check before layernorm ---")
+        print(f"Shape: {embeddings.shape}, Dtype: {embeddings.dtype}")
+        # .any() を使って、一つでもNaN/InfがあればTrueと表示させる
+        print(f"Contains NaN: {torch.isnan(embeddings).any().item()}")
+        print(f"Contains Inf: {torch.isinf(embeddings).any().item()}")
+        print("-----------------------------------------\n")
+
+        # =======================【デバッグのための変更】=========================
+        # 元のコードをコメントアウト
+        # hidden_states = self.embedding_layernorm(embeddings)
+
+        # 一時的にLayerNormをスキップする
+        print("!!! DEBUG: Skipping embedding_layernorm !!!")
+        hidden_states = embeddings
+        # =====================================================================
+        # LayerNormとDropout # デバッグ用の遅延（必要に応じて削除）
+        hidden_states = self.embedding_layernorm(embeddings)
+        hidden_states = self.embedding_dropout(hidden_states)
+        hidden_states = hidden_states.transpose(0, 1).contiguous()
+        
+        
+        # Transformer層 (LayerNorm2回問題も解消済み)
+        hidden_states = self.transformer_layers[0](hidden_states, extended_attention_mask)
+        if len(self.transformer_layers) > 1:
+            for layer in self.transformer_layers[1:]:
+                hidden_states = layer(hidden_states, extended_attention_mask)
+        
+        # LM Head
+        lm_logits = self.lm_head(hidden_states, self.word_embeddings.weight)
+
+        # Loss計算部分は変更なし (トークンごとのlossを返す)
+        if lm_labels is None:
+            return lm_logits.transpose(0, 1).contiguous()
         else:
-            # If not post_process, just return encoder output
-            return lm_output
+            lm_labels_s_b = lm_labels.transpose(0, 1).contiguous()
+            if self.fp16_lm_cross_entropy:
+                loss_per_token_s_b = tensor_parallel.vocab_parallel_cross_entropy(lm_logits, lm_labels_s_b)
+            else:
+                loss_per_token_s_b = tensor_parallel.vocab_parallel_cross_entropy(lm_logits.float(), lm_labels_s_b)
+            loss_per_token_b_s = loss_per_token_s_b.transpose(0, 1).contiguous()
+            return loss_per_token_b_s
 
     def state_dict_for_save_checkpoint(self, prefix='', keep_vars=False):
-        """For easy load when model is combined with other heads,
-        add an extra key."""
-
-        state_dict_ = {}
-        state_dict_[self._language_model_key] \
-            = self.language_model.state_dict_for_save_checkpoint(prefix=prefix,
-                                                                 keep_vars=keep_vars)
-        if self.post_process:
-            state_dict_[self._lm_head_key] \
-                = self.lm_head.state_dict_for_save_checkpoint(prefix=prefix,
-                                                               keep_vars=keep_vars)
-            if self.add_binary_head:
-                state_dict_[self._binary_head_key] \
-                    = self.binary_head.state_dict(prefix=prefix, keep_vars=keep_vars)
-        # Save word_embeddings.
-        if self.post_process and not self.pre_process:
-            state_dict_[self._word_embeddings_for_head_key] = self.word_embeddings.state_dict(prefix=prefix, keep_vars=keep_vars)
-        return state_dict_
-
+        return super().state_dict(prefix=prefix, keep_vars=keep_vars)
+    
     def load_state_dict(self, state_dict, strict=True):
-        """Customized load."""
-
-        self.language_model.load_state_dict(
-            state_dict[self._language_model_key], strict=strict)
-        if self.post_process:
-            self.lm_head.load_state_dict(
-                state_dict[self._lm_head_key], strict=strict)
-        if self.post_process and self.add_binary_head:
-            self.binary_head.load_state_dict(
-                state_dict[self._binary_head_key], strict=strict)
-        # Load word_embeddings.
-        if self.post_process and not self.pre_process:
-            self.word_embeddings.load_state_dict(
-                state_dict[self._word_embeddings_for_head_key], strict=strict)
+        super().load_state_dict(state_dict, strict=strict)

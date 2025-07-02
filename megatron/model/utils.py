@@ -9,6 +9,7 @@ import torch
 from megatron import get_args
 
 from deepspeed.runtime.zero import GatheredParameters
+import torch.nn.functional as F
 
 def init_method_normal(sigma):
     """Init method based on N(0, sigma)."""
@@ -65,6 +66,9 @@ def gelu_impl(x):
                                        (1.0 + 0.044715 * x * x)))
 def openai_gelu(x):
     return gelu_impl(x)
+def geglu(x):  # add for modern bert
+    x = torch.chunk(x, 2, dim=-1)
+    return F.gelu(x[0]) * x[1]
 
 #This is actually Python equivalent of torch.nn.functional.gelu(), also with type hints for ONNX exporter
 @torch.jit.script

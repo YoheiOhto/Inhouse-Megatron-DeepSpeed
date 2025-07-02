@@ -1223,3 +1223,1028 @@ Time to startup: 0.10992980003356934
 Finished processing nih_books
 
 All datasets have been processed.
+==================================================
+Processing dataset: pubmed
+==================================================
+[2025-07-02 10:09:39,957] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:09:39,973] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:09:45,449] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Are you sure you don't want to split sentences?
+[2025-07-02 10:09:52,239] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:09:52,253] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:09:55,827] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Opening /work/gg17/a97006/250519_modern_bert_0/json/pubmed.jsonl
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+[2025-07-02 10:10:13,746] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:13,751] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:13,771] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:13,775] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:13,840] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:13,863] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:13,884] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:13,887] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:13,910] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:13,912] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,013] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,037] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,181] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,189] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,204] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,211] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,217] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,240] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,246] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,268] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,326] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,346] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,480] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,480] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,500] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,502] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,510] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,530] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,582] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,594] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,604] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,615] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,623] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,631] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,635] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,637] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,638] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,647] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,654] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,658] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,659] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,660] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,663] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,683] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,687] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,697] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,706] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,721] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,731] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,740] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,750] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,754] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,762] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,772] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,773] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,784] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,794] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,806] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,808] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,813] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,825] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,828] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,835] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,837] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,842] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,847] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,849] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,851] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,853] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,860] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,861] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,863] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,871] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,873] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,875] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,875] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,875] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,875] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,881] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,894] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,897] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,897] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,898] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,906] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,916] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,922] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,929] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,939] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,946] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,965] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,970] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:14,995] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:14,999] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:15,000] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:10:15,022] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:15,023] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:10:22,846] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:22,954] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:24,066] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:24,213] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:24,469] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:24,512] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:24,513] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:24,642] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:24,745] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:24,942] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,207] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,257] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,262] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,277] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,351] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,401] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,406] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,410] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,411] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,429] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,443] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,460] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,461] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,461] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,485] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,540] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,549] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,593] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,600] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,605] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,614] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,634] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,649] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,650] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,656] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,670] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,670] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,671] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,681] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,689] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,690] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,695] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,730] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,734] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,778] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:10:25,785] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+[2025-07-02 10:10:25,817] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+[2025-07-02 10:10:25,835] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+Time to startup: 0.10995173454284668
+Finished processing pubmed
+
+==================================================
+Processing dataset: pmc
+==================================================
+[2025-07-02 10:26:10,683] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:10,705] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:15,398] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Are you sure you don't want to split sentences?
+[2025-07-02 10:26:22,298] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:22,311] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:25,840] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Opening /work/gg17/a97006/250519_modern_bert_0/json/pmc.jsonl
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+[2025-07-02 10:26:43,009] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:43,034] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:43,071] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:43,092] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:43,094] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:43,115] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:43,455] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:43,478] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:43,670] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:43,691] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:43,727] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:43,748] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:43,799] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:43,822] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:43,934] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:43,956] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,053] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,061] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,064] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,071] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,073] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,080] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,082] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,082] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,090] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,103] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,103] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,104] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,115] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,121] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,123] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,123] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,124] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,136] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,139] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,140] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,141] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,142] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,143] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,156] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,159] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,161] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,179] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,199] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,208] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,214] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,230] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,236] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,256] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,278] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,281] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,283] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,304] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,306] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,318] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,340] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,356] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,380] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,402] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,425] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,430] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,452] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,453] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,470] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,473] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,478] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,479] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,487] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,492] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,494] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,495] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,498] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,500] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,500] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,501] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,508] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,514] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,514] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,519] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,521] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,521] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,525] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,528] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,529] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,540] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,545] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,548] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,550] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,552] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,558] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,567] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,584] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,626] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,648] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:44,719] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 10:26:44,742] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 10:26:51,015] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:51,308] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:52,313] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:53,327] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:53,899] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:53,964] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,453] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,651] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,720] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,843] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,854] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,896] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,926] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,943] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,954] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,956] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,965] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,970] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,992] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:54,992] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,035] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,072] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,078] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,120] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,146] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,163] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,215] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,224] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,226] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,229] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,241] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,287] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,294] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,296] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,316] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,318] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,327] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,338] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,340] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,353] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,367] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,392] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,408] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,411] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,422] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 10:26:55,437] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+> building BertWordPieceCase tokenizer ...
+[2025-07-02 10:26:55,466] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+> building BertWordPieceCase tokenizer ...
+[2025-07-02 10:26:55,472] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+Time to startup: 0.11508440971374512
+Finished processing pmc
+
+==================================================
+Processing dataset: fda_label
+==================================================
+[2025-07-02 12:18:07,421] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:07,444] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:12,711] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Are you sure you don't want to split sentences?
+[2025-07-02 12:18:19,542] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:19,555] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:23,075] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Opening /work/gg17/a97006/250519_modern_bert_0/json/fda_label.jsonl
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+[2025-07-02 12:18:40,443] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:40,444] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:40,464] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:40,465] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:40,550] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:40,573] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:40,662] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:40,685] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:40,842] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:40,865] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:40,940] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:40,960] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,052] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,052] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,072] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,072] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,076] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,085] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,096] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,104] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,119] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,129] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,134] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,139] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,146] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,149] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,154] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,166] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,247] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,256] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,269] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,276] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,281] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,302] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,314] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,330] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,338] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,352] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,371] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,392] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,406] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,415] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,426] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,427] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,428] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,437] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,437] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,448] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,448] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,449] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,458] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,468] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,474] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,475] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,484] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,495] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,496] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,509] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,511] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,512] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,531] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,532] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,533] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,542] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,551] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,552] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,554] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,564] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,572] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,574] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,587] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,609] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,611] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,622] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,626] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,628] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,632] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,634] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,636] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,643] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,647] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,650] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,651] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,656] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,659] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,672] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,677] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,684] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,699] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,708] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,792] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,814] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,818] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,832] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:18:41,844] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:41,856] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:18:48,845] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:48,865] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:50,443] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:50,610] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:51,068] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:51,333] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:51,646] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:51,692] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:51,692] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:51,739] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:51,934] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:51,938] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:51,985] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,030] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,065] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,140] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,141] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,159] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,167] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,170] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,180] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,189] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,193] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,215] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,278] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,279] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,285] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,310] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,321] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,338] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,340] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,347] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,351] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,360] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,365] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+[2025-07-02 12:18:52,410] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,413] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,414] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,417] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,417] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,421] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,426] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,444] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,454] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,481] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,519] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:18:52,522] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+[2025-07-02 12:18:52,674] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+Time to startup: 0.11821556091308594
+Finished processing fda_label
+
+==================================================
+Processing dataset: nih_books
+==================================================
+[2025-07-02 12:23:10,833] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:10,848] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:14,505] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Are you sure you don't want to split sentences?
+[2025-07-02 12:23:21,066] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:21,080] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:24,636] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Opening /work/gg17/a97006/250519_modern_bert_0/json/nih_books.jsonl
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+[2025-07-02 12:23:41,692] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:41,715] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:41,820] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:41,845] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:41,928] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:41,952] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,004] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,027] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,171] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,194] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,241] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,255] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,264] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,277] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,347] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,363] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,369] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,383] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,391] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,393] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,405] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,411] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,413] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,418] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,424] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,438] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,444] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,466] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,492] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,511] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,581] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,596] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,597] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,598] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,601] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,603] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,617] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,617] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,617] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,619] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,623] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,623] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,624] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,640] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,645] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,645] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,647] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,667] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,677] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,699] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,724] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,730] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,745] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,751] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,771] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,782] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,793] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,803] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,805] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,807] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,807] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,824] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,825] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,828] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,829] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,830] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,833] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,847] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,854] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,855] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,856] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,857] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,870] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,877] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,878] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,881] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,885] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,890] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,892] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,903] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,907] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,912] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,912] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,913] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,913] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,919] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,920] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,926] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,934] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,935] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,935] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,941] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,941] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,944] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-07-02 12:23:42,948] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:42,967] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-07-02 12:23:52,073] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:52,085] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:52,337] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:52,345] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:52,658] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:52,836] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,044] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,060] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,084] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,156] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,201] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,306] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,338] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,396] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,433] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,443] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,457] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,464] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,466] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,472] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,478] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,508] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,529] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,546] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,576] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,587] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,603] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,608] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,644] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,653] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,670] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,673] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,695] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,699] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,699] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,714] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,730] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,739] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,753] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,754] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,758] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,772] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,772] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,803] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,847] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,853] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:53,869] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-07-02 12:23:54,079] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+ > padded vocab (size: 50002) with 46 dummy tokens (new size: 50048)
+Time to startup: 0.10729503631591797
+Finished processing nih_books
+
+All datasets have been processed.

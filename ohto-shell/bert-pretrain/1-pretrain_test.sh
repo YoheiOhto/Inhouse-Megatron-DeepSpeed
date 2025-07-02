@@ -1,6 +1,6 @@
 #!/bin/sh
 #PBS -q short-g
-#PBS -l select=2
+#PBS -l select=1
 #PBS -W group_list=gg17
 #PBS -o test.out
 #PBS -e test.err
@@ -23,7 +23,7 @@ dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspee
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=16
+global_batch_size=100
 lr=1e-4
 min_lr=1e-5
 
@@ -41,13 +41,14 @@ init_std=0.02
 # init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
-train_iters=$((${train_iters_in_million} * 10000)) # 2 * 10000 = 20000
-
+# train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
+train_iters=213525
 ###############################################################################
 ### lr configs
-lr_warmup_iters=100 # これが lr_warmup_steps に対応
+lr_warmup_iters=2000 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
-lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
+# lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
+lr_decay_iters=213525 # これが lr_decay_steps に対応
 lr_decay_style="linear"
 ####################################################
 ### Parallelism configs
@@ -99,10 +100,10 @@ if [ ${batch_size} -eq 0 ]; then
 fi
 ###############################################################################
 ### Misc configs
-log_interval=1000
-eval_iters=10
-eval_interval=100
-num_save=100
+log_interval=10000
+eval_iters=100
+eval_interval=1000
+num_save=1000
 save_interval=$((${train_iters} / ${num_save}))
 activation_checkpoint="false"
 log_optimizer_state="true"
@@ -111,7 +112,7 @@ log_optimizer_state="true"
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 host="${HOSTNAME}" # This will be the hostname of the node running this script (master PBS job)
 
-jobname="bert-pubmed-test"
+jobname="bert-full-pubmed-30000"
 
 # BLEND DATASET
 pubmed_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pubmed/pubmed_30000/pubmed_text_document"
@@ -124,7 +125,7 @@ nih_books_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/nih_books/pu
 weight_nih_books=0.0
 # Combine the datasets into a single data path
 data_path="${weight_pubmed} ${pubmed_path} ${weight_pmc} ${pmc_path} ${weight_fda_label} ${fda_label_path} ${weight_nih_books} ${nih_books_path}"
-
+data_path=${pubmed_path} # For testing, use only pubmed
 vocab_path="/work/gg17/a97006/250519_modern_bert_0/tokenizer/vocab_30000.txt"
 
 num_workers=4
@@ -133,6 +134,7 @@ jobname="${jobname}-${model_size}B-iters-${train_iters_in_million}M"
 jobname="${jobname}-lr-${lr}-min-${min_lr}-wmup-${lr_warmup_iters}-dcy-${lr_decay_iters_in_million}M-sty-${lr_decay_style}"
 jobname="${jobname}-gbs-${global_batch_size}-mbs-${batch_size}-gpu-${num_gpus}-zero-${zero_stage}-mp-${mp_size}-pp-${pp_size}"
 if [ "${no_pp}" = "true" ]; then
+
     jobname="${jobname}-nopp"
 fi
 
@@ -158,6 +160,7 @@ data_options=" \
 
 megatron_options=" \
     --bert-no-binary-head \
+    --disable-bias-linear \
     --override-opt_param-scheduler \
     --adam-beta1 0.9 \
     --adam-beta2 0.999 \
@@ -185,6 +188,8 @@ megatron_options=" \
     --clip-grad 1.0 \
     --num-workers ${num_workers} \
     --fp16 \
+    --geglu \
+    --layernorm-embedding \
     --load ${checkpoint_path} \
     --save ${checkpoint_path} \
     --tensorboard-queue-size 1 \
@@ -192,8 +197,14 @@ megatron_options=" \
     --log-batch-size-to-tensorboard \
     --log-validation-ppl-to-tensorboard \
     --tensorboard-dir ${tensorboard_path} \
+    --use-switch-attention \
+    --global-attn-every-n-layers 3 \
+    --local-window-size 128 \
     --wandb-project deepspeed-megatron \
-    --wandb-exp-name test_2gpus \
+    --use-flash-attn-v2 \
+    --use-switch-attention-rope \
+    --no-position-embedding \
+    --wandb-exp-name full-pubmed-1-epoch \
     --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then

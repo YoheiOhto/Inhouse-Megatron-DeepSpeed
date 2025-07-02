@@ -36,9 +36,9 @@ for dataset_name in ${DATASETS}; do
     echo "=================================================="
 
     input_file="${BASE_DIR}/json/${dataset_name}.jsonl"
-    output_prefix_dir="${BASE_DIR}/preprocessed/${dataset_name}/pubmed_100000"
+    output_prefix_dir="${BASE_DIR}/preprocessed/${dataset_name}/pubmed_100000-1024"
     output_prefix="${output_prefix_dir}/${dataset_name}"
-    wandb_name="${DATE_TAG}-miyabi-${dataset_name}-100000"
+    wandb_name="${DATE_TAG}-miyabi-${dataset_name}-100000-1024"
 
     mkdir -p "${output_prefix_dir}"
 
@@ -49,7 +49,8 @@ for dataset_name in ${DATASETS}; do
         --tokenizer-type "${TOKENIZER_TYPE}" \
         --workers "${WORKERS}" \
         --wandb-project "${WANDB_PROJECT}" \
-        --wandb-name "${wandb_name}"
+        --wandb-name "${wandb_name}" \
+        --seq-length 1024
 
     echo "Finished processing ${dataset_name}"
     echo ""

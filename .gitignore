@@ -23,3 +23,6 @@ logs
 bookcorpus_data/
 users/
 dataset/
+
+model/
+ohto-shell/llama-cpt/dl_hf_llama.py

@@ -1,0 +1,658 @@
+==================================================
+Starting preprocessing for dataset: c4
+==================================================
+Step 1: Downloading C4 dataset...
+Collecting datasets
+  Downloading datasets-3.6.0-py3-none-any.whl.metadata (19 kB)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from datasets) (3.13.1)
+Requirement already satisfied: numpy>=1.17 in ./250/lib/python3.12/site-packages (from datasets) (2.1.2)
+Collecting pyarrow>=15.0.0 (from datasets)
+  Downloading pyarrow-20.0.0-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (3.3 kB)
+Collecting dill<0.3.9,>=0.3.0 (from datasets)
+  Using cached dill-0.3.8-py3-none-any.whl.metadata (10 kB)
+Requirement already satisfied: pandas in ./250/lib/python3.12/site-packages (from datasets) (2.3.0)
+Requirement already satisfied: requests>=2.32.2 in ./250/lib/python3.12/site-packages (from datasets) (2.32.4)
+Requirement already satisfied: tqdm>=4.66.3 in ./250/lib/python3.12/site-packages (from datasets) (4.67.1)
+Collecting xxhash (from datasets)
+  Downloading xxhash-3.5.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (12 kB)
+Collecting multiprocess<0.70.17 (from datasets)
+  Using cached multiprocess-0.70.16-py312-none-any.whl.metadata (7.2 kB)
+Requirement already satisfied: fsspec<=2025.3.0,>=2023.1.0 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2024.6.1)
+Requirement already satisfied: huggingface-hub>=0.24.0 in ./250/lib/python3.12/site-packages (from datasets) (0.33.0)
+Requirement already satisfied: packaging in ./250/lib/python3.12/site-packages (from datasets) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from datasets) (6.0.2)
+Collecting aiohttp!=4.0.0a0,!=4.0.0a1 (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets)
+  Downloading aiohttp-3.12.13-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (7.6 kB)
+Collecting aiohappyeyeballs>=2.5.0 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets)
+  Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl.metadata (5.9 kB)
+Collecting aiosignal>=1.1.2 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets)
+  Using cached aiosignal-1.3.2-py2.py3-none-any.whl.metadata (3.8 kB)
+Collecting attrs>=17.3.0 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets)
+  Using cached attrs-25.3.0-py3-none-any.whl.metadata (10 kB)
+Collecting frozenlist>=1.1.1 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets)
+  Downloading frozenlist-1.7.0-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (18 kB)
+Collecting multidict<7.0,>=4.5 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets)
+  Downloading multidict-6.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.3 kB)
+Collecting propcache>=0.2.0 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets)
+  Downloading propcache-0.3.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (12 kB)
+Collecting yarl<2.0,>=1.17.0 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets)
+  Downloading yarl-1.20.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (73 kB)
+Requirement already satisfied: idna>=2.0 in ./250/lib/python3.12/site-packages (from yarl<2.0,>=1.17.0->aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.10)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (3.4.2)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2025.4.26)
+Requirement already satisfied: python-dateutil>=2.8.2 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: tzdata>=2022.7 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: six>=1.5 in ./250/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas->datasets) (1.17.0)
+Downloading datasets-3.6.0-py3-none-any.whl (491 kB)
+Using cached dill-0.3.8-py3-none-any.whl (116 kB)
+Using cached multiprocess-0.70.16-py312-none-any.whl (146 kB)
+Downloading aiohttp-3.12.13-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.7/1.7 MB 18.6 MB/s eta 0:00:00
+Downloading multidict-6.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (251 kB)
+Downloading yarl-1.20.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (355 kB)
+Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl (15 kB)
+Using cached aiosignal-1.3.2-py2.py3-none-any.whl (7.6 kB)
+Using cached attrs-25.3.0-py3-none-any.whl (63 kB)
+Downloading frozenlist-1.7.0-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (241 kB)
+Downloading propcache-0.3.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (224 kB)
+Downloading pyarrow-20.0.0-cp312-cp312-manylinux_2_28_x86_64.whl (42.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 42.3/42.3 MB 94.3 MB/s eta 0:00:00
+Downloading xxhash-3.5.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (194 kB)
+Installing collected packages: xxhash, pyarrow, propcache, multidict, frozenlist, dill, attrs, aiohappyeyeballs, yarl, multiprocess, aiosignal, aiohttp, datasets
+
+Successfully installed aiohappyeyeballs-2.6.1 aiohttp-3.12.13 aiosignal-1.3.2 attrs-25.3.0 datasets-3.6.0 dill-0.3.8 frozenlist-1.7.0 multidict-6.5.1 multiprocess-0.70.16 propcache-0.3.2 pyarrow-20.0.0 xxhash-3.5.0 yarl-1.20.1
+==================================================
+Starting preprocessing for dataset: c4
+==================================================
+Step 1: Downloading C4 dataset...
+Requirement already satisfied: datasets in ./250/lib/python3.12/site-packages (3.6.0)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from datasets) (3.13.1)
+Requirement already satisfied: numpy>=1.17 in ./250/lib/python3.12/site-packages (from datasets) (2.1.2)
+Requirement already satisfied: pyarrow>=15.0.0 in ./250/lib/python3.12/site-packages (from datasets) (20.0.0)
+Requirement already satisfied: dill<0.3.9,>=0.3.0 in ./250/lib/python3.12/site-packages (from datasets) (0.3.8)
+Requirement already satisfied: pandas in ./250/lib/python3.12/site-packages (from datasets) (2.3.0)
+Requirement already satisfied: requests>=2.32.2 in ./250/lib/python3.12/site-packages (from datasets) (2.32.4)
+Requirement already satisfied: tqdm>=4.66.3 in ./250/lib/python3.12/site-packages (from datasets) (4.67.1)
+Requirement already satisfied: xxhash in ./250/lib/python3.12/site-packages (from datasets) (3.5.0)
+Requirement already satisfied: multiprocess<0.70.17 in ./250/lib/python3.12/site-packages (from datasets) (0.70.16)
+Requirement already satisfied: fsspec<=2025.3.0,>=2023.1.0 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2024.6.1)
+Requirement already satisfied: huggingface-hub>=0.24.0 in ./250/lib/python3.12/site-packages (from datasets) (0.33.0)
+Requirement already satisfied: packaging in ./250/lib/python3.12/site-packages (from datasets) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from datasets) (6.0.2)
+Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.12.13)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2.6.1)
+Requirement already satisfied: aiosignal>=1.1.2 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.3.2)
+Requirement already satisfied: attrs>=17.3.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (25.3.0)
+Requirement already satisfied: frozenlist>=1.1.1 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.7.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (6.5.1)
+Requirement already satisfied: propcache>=0.2.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (0.3.2)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.20.1)
+Requirement already satisfied: idna>=2.0 in ./250/lib/python3.12/site-packages (from yarl<2.0,>=1.17.0->aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.10)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (3.4.2)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2025.4.26)
+Requirement already satisfied: python-dateutil>=2.8.2 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: tzdata>=2022.7 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: six>=1.5 in ./250/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas->datasets) (1.17.0)
+==================================================
+Starting preprocessing for dataset: c4
+==================================================
+Step 1: Downloading C4 dataset...
+C4データセットのダウンロードと変換を開始します...
+対象: English 'train' split
+保存先: /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4
+
+'/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4.jsonl' に保存中...
+エラーが発生しました: 'IterableDataset' object has no attribute 'to_json'
+Requirement already satisfied: datasets in ./250/lib/python3.12/site-packages (3.6.0)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from datasets) (3.13.1)
+Requirement already satisfied: numpy>=1.17 in ./250/lib/python3.12/site-packages (from datasets) (2.1.2)
+Requirement already satisfied: pyarrow>=15.0.0 in ./250/lib/python3.12/site-packages (from datasets) (20.0.0)
+Requirement already satisfied: dill<0.3.9,>=0.3.0 in ./250/lib/python3.12/site-packages (from datasets) (0.3.8)
+Requirement already satisfied: pandas in ./250/lib/python3.12/site-packages (from datasets) (2.3.0)
+Requirement already satisfied: requests>=2.32.2 in ./250/lib/python3.12/site-packages (from datasets) (2.32.4)
+Requirement already satisfied: tqdm>=4.66.3 in ./250/lib/python3.12/site-packages (from datasets) (4.67.1)
+Requirement already satisfied: xxhash in ./250/lib/python3.12/site-packages (from datasets) (3.5.0)
+Requirement already satisfied: multiprocess<0.70.17 in ./250/lib/python3.12/site-packages (from datasets) (0.70.16)
+Requirement already satisfied: fsspec<=2025.3.0,>=2023.1.0 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2024.6.1)
+Requirement already satisfied: huggingface-hub>=0.24.0 in ./250/lib/python3.12/site-packages (from datasets) (0.33.0)
+Requirement already satisfied: packaging in ./250/lib/python3.12/site-packages (from datasets) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from datasets) (6.0.2)
+Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.12.13)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2.6.1)
+Requirement already satisfied: aiosignal>=1.1.2 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.3.2)
+Requirement already satisfied: attrs>=17.3.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (25.3.0)
+Requirement already satisfied: frozenlist>=1.1.1 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.7.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (6.5.1)
+Requirement already satisfied: propcache>=0.2.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (0.3.2)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.20.1)
+Requirement already satisfied: idna>=2.0 in ./250/lib/python3.12/site-packages (from yarl<2.0,>=1.17.0->aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.10)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (3.4.2)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2025.4.26)
+Requirement already satisfied: python-dateutil>=2.8.2 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: tzdata>=2022.7 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: six>=1.5 in ./250/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas->datasets) (1.17.0)
+==================================================
+Starting preprocessing for dataset: c4
+==================================================
+Step 1: Downloading C4 dataset...
+C4データセットのストリーミングダウンロードとJSONLへの変換を開始します...
+対象: English 'train' split
+保存先ファイル: /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4.jsonl
+Requirement already satisfied: datasets in ./250/lib/python3.12/site-packages (3.6.0)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from datasets) (3.13.1)
+Requirement already satisfied: numpy>=1.17 in ./250/lib/python3.12/site-packages (from datasets) (2.1.2)
+Requirement already satisfied: pyarrow>=15.0.0 in ./250/lib/python3.12/site-packages (from datasets) (20.0.0)
+Requirement already satisfied: dill<0.3.9,>=0.3.0 in ./250/lib/python3.12/site-packages (from datasets) (0.3.8)
+Requirement already satisfied: pandas in ./250/lib/python3.12/site-packages (from datasets) (2.3.0)
+Requirement already satisfied: requests>=2.32.2 in ./250/lib/python3.12/site-packages (from datasets) (2.32.4)
+Requirement already satisfied: tqdm>=4.66.3 in ./250/lib/python3.12/site-packages (from datasets) (4.67.1)
+Requirement already satisfied: xxhash in ./250/lib/python3.12/site-packages (from datasets) (3.5.0)
+Requirement already satisfied: multiprocess<0.70.17 in ./250/lib/python3.12/site-packages (from datasets) (0.70.16)
+Requirement already satisfied: fsspec<=2025.3.0,>=2023.1.0 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2024.6.1)
+Requirement already satisfied: huggingface-hub>=0.24.0 in ./250/lib/python3.12/site-packages (from datasets) (0.33.0)
+Requirement already satisfied: packaging in ./250/lib/python3.12/site-packages (from datasets) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from datasets) (6.0.2)
+Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.12.13)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2.6.1)
+Requirement already satisfied: aiosignal>=1.1.2 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.3.2)
+Requirement already satisfied: attrs>=17.3.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (25.3.0)
+Requirement already satisfied: frozenlist>=1.1.1 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.7.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (6.5.1)
+Requirement already satisfied: propcache>=0.2.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (0.3.2)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.20.1)
+Requirement already satisfied: idna>=2.0 in ./250/lib/python3.12/site-packages (from yarl<2.0,>=1.17.0->aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.10)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (3.4.2)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2025.4.26)
+Requirement already satisfied: python-dateutil>=2.8.2 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: tzdata>=2022.7 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: six>=1.5 in ./250/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas->datasets) (1.17.0)
+==================================================
+Starting preprocessing for dataset: c4
+==================================================
+Step 1: Downloading C4 dataset...
+
+エラーが発生しました: 429 Client Error: Too Many Requests for url: https://huggingface.co/datasets/allenai/c4/resolve/1588ec454efa1a09f29cd18ddd04fe05fc8653a2/en/c4-train.00011-of-01024.json.gz
+不完全なファイル /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4.jsonl を削除します。
+Requirement already satisfied: datasets in ./250/lib/python3.12/site-packages (3.6.0)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from datasets) (3.13.1)
+Requirement already satisfied: numpy>=1.17 in ./250/lib/python3.12/site-packages (from datasets) (2.1.2)
+Requirement already satisfied: pyarrow>=15.0.0 in ./250/lib/python3.12/site-packages (from datasets) (20.0.0)
+Requirement already satisfied: dill<0.3.9,>=0.3.0 in ./250/lib/python3.12/site-packages (from datasets) (0.3.8)
+Requirement already satisfied: pandas in ./250/lib/python3.12/site-packages (from datasets) (2.3.0)
+Requirement already satisfied: requests>=2.32.2 in ./250/lib/python3.12/site-packages (from datasets) (2.32.4)
+Requirement already satisfied: tqdm>=4.66.3 in ./250/lib/python3.12/site-packages (from datasets) (4.67.1)
+Requirement already satisfied: xxhash in ./250/lib/python3.12/site-packages (from datasets) (3.5.0)
+Requirement already satisfied: multiprocess<0.70.17 in ./250/lib/python3.12/site-packages (from datasets) (0.70.16)
+Requirement already satisfied: fsspec<=2025.3.0,>=2023.1.0 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2024.6.1)
+Requirement already satisfied: huggingface-hub>=0.24.0 in ./250/lib/python3.12/site-packages (from datasets) (0.33.0)
+Requirement already satisfied: packaging in ./250/lib/python3.12/site-packages (from datasets) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from datasets) (6.0.2)
+Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.12.13)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2.6.1)
+Requirement already satisfied: aiosignal>=1.1.2 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.3.2)
+Requirement already satisfied: attrs>=17.3.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (25.3.0)
+Requirement already satisfied: frozenlist>=1.1.1 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.7.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (6.5.1)
+Requirement already satisfied: propcache>=0.2.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (0.3.2)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.20.1)
+Requirement already satisfied: idna>=2.0 in ./250/lib/python3.12/site-packages (from yarl<2.0,>=1.17.0->aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.10)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (3.4.2)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2025.4.26)
+Requirement already satisfied: python-dateutil>=2.8.2 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: tzdata>=2022.7 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: six>=1.5 in ./250/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas->datasets) (1.17.0)
+Requirement already satisfied: huggingface_hub in ./250/lib/python3.12/site-packages (0.33.0)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from huggingface_hub) (3.13.1)
+Requirement already satisfied: fsspec>=2023.5.0 in ./250/lib/python3.12/site-packages (from huggingface_hub) (2024.6.1)
+Requirement already satisfied: packaging>=20.9 in ./250/lib/python3.12/site-packages (from huggingface_hub) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from huggingface_hub) (6.0.2)
+Requirement already satisfied: requests in ./250/lib/python3.12/site-packages (from huggingface_hub) (2.32.4)
+Requirement already satisfied: tqdm>=4.42.1 in ./250/lib/python3.12/site-packages (from huggingface_hub) (4.67.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface_hub) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface_hub) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (2025.4.26)
+Collecting dask
+  Downloading dask-2025.5.1-py3-none-any.whl.metadata (3.8 kB)
+Requirement already satisfied: click>=8.1 in ./250/lib/python3.12/site-packages (from dask) (8.2.1)
+Collecting cloudpickle>=3.0.0 (from dask)
+  Downloading cloudpickle-3.1.1-py3-none-any.whl.metadata (7.1 kB)
+Requirement already satisfied: fsspec>=2021.09.0 in ./250/lib/python3.12/site-packages (from dask) (2024.6.1)
+Requirement already satisfied: packaging>=20.0 in ./250/lib/python3.12/site-packages (from dask) (25.0)
+Collecting partd>=1.4.0 (from dask)
+  Downloading partd-1.4.2-py3-none-any.whl.metadata (4.6 kB)
+Requirement already satisfied: pyyaml>=5.3.1 in ./250/lib/python3.12/site-packages (from dask) (6.0.2)
+Collecting toolz>=0.10.0 (from dask)
+  Downloading toolz-1.0.0-py3-none-any.whl.metadata (5.1 kB)
+Collecting locket (from partd>=1.4.0->dask)
+  Downloading locket-1.0.0-py2.py3-none-any.whl.metadata (2.8 kB)
+Downloading dask-2025.5.1-py3-none-any.whl (1.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.5/1.5 MB 34.4 MB/s eta 0:00:00
+Downloading cloudpickle-3.1.1-py3-none-any.whl (20 kB)
+Downloading partd-1.4.2-py3-none-any.whl (18 kB)
+Downloading toolz-1.0.0-py3-none-any.whl (56 kB)
+Downloading locket-1.0.0-py2.py3-none-any.whl (4.4 kB)
+Installing collected packages: toolz, locket, cloudpickle, partd, dask
+
+Successfully installed cloudpickle-3.1.1 dask-2025.5.1 locket-1.0.0 partd-1.4.2 toolz-1.0.0
+==================================================
+Starting preprocessing for dataset: c4
+==================================================
+Step 1: Downloading C4 dataset...
+C4データセットの最初の100個のファイルを処理します...
+対象ファイルの例: hf://datasets/allenai/c4/en/c4-train.00000-of-01024.json.gz
+出力先ディレクトリ: /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4_100_files_jsonl
+
+Daskによる並列処理とファイルへの書き出しを開始します...
+[                                        ] | 0% Completed | 329.46 us[                                        ] | 0% Completed | 106.21 ms[                                        ] | 0% Completed | 257.19 ms[                                        ] | 0% Completed | 371.35 ms[                                        ] | 0% Completed | 490.11 ms[                                        ] | 0% Completed | 596.00 ms[                                        ] | 0% Completed | 705.19 ms[                                        ] | 0% Completed | 809.44 ms[                                        ] | 0% Completed | 935.47 ms[                                        ] | 0% Completed | 1.04 s[                                        ] | 0% Completed | 1.15 s[                                        ] | 0% Completed | 1.26 s[                                        ] | 0% Completed | 1.37 s[                                        ] | 0% Completed | 1.47 s[                                        ] | 0% Completed | 1.58 s[                                        ] | 0% Completed | 1.69 s[                                        ] | 0% Completed | 1.80 s[                                        ] | 0% Completed | 1.90 s[                                        ] | 0% Completed | 2.01 s[                                        ] | 0% Completed | 2.12 s[                                        ] | 0% Completed | 2.23 s[                                        ] | 0% Completed | 2.33 s[                                        ] | 0% Completed | 2.43 s[                                        ] | 0% Completed | 2.54 s[                                        ] | 0% Completed | 2.64 s[                                        ] | 0% Completed | 2.74 s[                                        ] | 0% Completed | 2.85 s[                                        ] | 0% Completed | 2.96 s[                                        ] | 0% Completed | 3.06 s[                                        ] | 0% Completed | 3.17 s[                                        ] | 0% Completed | 3.28 s[                                        ] | 0% Completed | 3.39 s[                                        ] | 0% Completed | 3.50 s[                                        ] | 0% Completed | 3.61 s[                                        ] | 0% Completed | 3.72 s[                                        ] | 0% Completed | 3.83 s[                                        ] | 0% Completed | 3.96 s[                                        ] | 0% Completed | 4.07 s[                                        ] | 0% Completed | 4.18 s[                                        ] | 0% Completed | 4.29 s[                                        ] | 0% Completed | 4.40 s[                                        ] | 0% Completed | 4.52 s[                                        ] | 0% Completed | 4.62 s[                                        ] | 0% Completed | 4.73 s[                                        ] | 0% Completed | 4.84 s[                                        ] | 0% Completed | 4.96 s[                                        ] | 0% Completed | 5.07 s[                                        ] | 0% Completed | 5.17 s[                                        ] | 0% Completed | 5.28 s[                                        ] | 0% Completed | 5.38 s[                                        ] | 0% Completed | 5.49 s[                                        ] | 0% Completed | 5.59 s[                                        ] | 0% Completed | 5.71 s[                                        ] | 0% Completed | 5.82 s[                                        ] | 0% Completed | 5.93 s[                                        ] | 0% Completed | 6.04 s[                                        ] | 0% Completed | 6.15 s[                                        ] | 0% Completed | 6.26 s[                                        ] | 0% Completed | 6.37 s[                                        ] | 0% Completed | 6.48 s[                                        ] | 0% Completed | 6.59 s[                                        ] | 0% Completed | 6.70 s[                                        ] | 0% Completed | 6.80 s[                                        ] | 0% Completed | 6.91 s[                                        ] | 0% Completed | 7.01 s[                                        ] | 0% Completed | 7.13 s[                                        ] | 0% Completed | 7.24 s[                                        ] | 0% Completed | 7.36 s[                                        ] | 0% Completed | 7.46 s[                                        ] | 0% Completed | 7.57 s[                                        ] | 0% Completed | 7.67 s[                                        ] | 0% Completed | 7.78 s[                                        ] | 0% Completed | 7.90 s[                                        ] | 0% Completed | 8.00 s[                                        ] | 0% Completed | 8.10 s[                                        ] | 0% Completed | 8.22 s[                                        ] | 0% Completed | 8.33 s[                                        ] | 0% Completed | 8.43 s[                                        ] | 0% Completed | 8.54 s[                                        ] | 0% Completed | 8.65 s[                                        ] | 0% Completed | 8.75 s[                                        ] | 0% Completed | 8.86 s[                                        ] | 0% Completed | 8.97 s[                                        ] | 0% Completed | 9.07 s[                                        ] | 0% Completed | 9.18 s[                                        ] | 0% Completed | 9.28 s[                                        ] | 0% Completed | 9.40 s[                                        ] | 0% Completed | 9.51 s[                                        ] | 0% Completed | 9.61 s[                                        ] | 0% Completed | 9.74 s[                                        ] | 0% Completed | 9.84 s[                                        ] | 0% Completed | 9.95 s[                                        ] | 0% Completed | 10.06 s[                                        ] | 0% Completed | 10.16 s[                                        ] | 0% Completed | 10.28 s[                                        ] | 0% Completed | 10.39 s[                                        ] | 0% Completed | 10.49 s[                                        ] | 0% Completed | 10.61 s[                                        ] | 0% Completed | 10.72 s[                                        ] | 0% Completed | 10.83 s[                                        ] | 0% Completed | 10.93 s[                                        ] | 0% Completed | 11.05 s[                                        ] | 0% Completed | 11.17 s[                                        ] | 0% Completed | 11.28 s[                                        ] | 0% Completed | 11.39 s[                                        ] | 0% Completed | 11.50 s[                                        ] | 0% Completed | 11.61 s[                                        ] | 0% Completed | 11.71 s[                                        ] | 0% Completed | 11.82 s[                                        ] | 0% Completed | 11.93 s[                                        ] | 0% Completed | 12.03 s[                                        ] | 0% Completed | 12.14 s[                                        ] | 0% Completed | 12.25 s[                                        ] | 0% Completed | 12.36 s[                                        ] | 0% Completed | 12.46 s[                                        ] | 0% Completed | 12.56 s[                                        ] | 0% Completed | 12.67 s[                                        ] | 0% Completed | 12.77 s[                                        ] | 0% Completed | 12.88 s[                                        ] | 0% Completed | 13.00 s[                                        ] | 0% Completed | 13.10 s[                                        ] | 0% Completed | 13.21 s[                                        ] | 0% Completed | 13.33 s[                                        ] | 0% Completed | 13.43 s[                                        ] | 0% Completed | 13.55 s[                                        ] | 0% Completed | 13.66 s[                                        ] | 0% Completed | 13.76 s[                                        ] | 0% Completed | 13.88 s[                                        ] | 0% Completed | 13.99 s[                                        ] | 0% Completed | 14.11 s[                                        ] | 0% Completed | 14.22 s[                                        ] | 0% Completed | 14.32 s[                                        ] | 0% Completed | 14.43 s[                                        ] | 0% Completed | 14.53 s[                                        ] | 0% Completed | 14.64 s[                                        ] | 0% Completed | 14.75 s[                                        ] | 0% Completed | 14.85 s[                                        ] | 0% Completed | 14.96 s[                                        ] | 0% Completed | 15.07 s[                                        ] | 0% Completed | 15.29 s[                                        ] | 0% Completed | 15.41 s[                                        ] | 0% Completed | 15.52 s[                                        ] | 0% Completed | 15.63 s[                                        ] | 0% Completed | 15.73 s[                                        ] | 0% Completed | 15.84 s[                                        ] | 0% Completed | 15.94 s[                                        ] | 0% Completed | 16.05 s[                                        ] | 0% Completed | 16.17 s[                                        ] | 0% Completed | 16.29 s[                                        ] | 0% Completed | 16.39 s[                                        ] | 0% Completed | 16.50 s[                                        ] | 0% Completed | 16.61 s[                                        ] | 0% Completed | 16.72 s[                                        ] | 0% Completed | 16.82 s[                                        ] | 0% Completed | 16.93 s[                                        ] | 0% Completed | 17.03 s[                                        ] | 0% Completed | 17.13 s[                                        ] | 0% Completed | 17.24 s[                                        ] | 0% Completed | 17.34 s[                                        ] | 0% Completed | 17.45 s[                                        ] | 0% Completed | 17.55 s[                                        ] | 0% Completed | 17.66 s[                                        ] | 0% Completed | 17.77 s[                                        ] | 0% Completed | 17.87 s[                                        ] | 0% Completed | 17.98 s[                                        ] | 0% Completed | 18.09 s[                                        ] | 0% Completed | 18.20 s[                                        ] | 0% Completed | 18.31 s[                                        ] | 0% Completed | 18.41 s[                                        ] | 0% Completed | 18.54 s[                                        ] | 0% Completed | 18.64 s[                                        ] | 0% Completed | 18.75 s[                                        ] | 0% Completed | 18.86 s[                                        ] | 0% Completed | 18.97 s[                                        ] | 0% Completed | 19.07 s[                                        ] | 0% Completed | 19.17 s[                                        ] | 0% Completed | 19.28 s[                                        ] | 0% Completed | 19.38 s[                                        ] | 0% Completed | 19.49 s[                                        ] | 0% Completed | 19.59 s[                                        ] | 0% Completed | 19.70 s[                                        ] | 0% Completed | 19.80 s[                                        ] | 0% Completed | 19.91 s[                                        ] | 0% Completed | 20.02 s[                                        ] | 0% Completed | 20.13 s[                                        ] | 0% Completed | 20.23 s[                                        ] | 0% Completed | 20.34 s[                                        ] | 0% Completed | 20.44 s[                                        ] | 0% Completed | 20.54 s[                                        ] | 0% Completed | 20.65 s[                                        ] | 0% Completed | 20.75 s[                                        ] | 0% Completed | 20.86 s[                                        ] | 0% Completed | 20.97 s[                                        ] | 0% Completed | 21.08 s[                                        ] | 0% Completed | 21.20 s[                                        ] | 0% Completed | 21.31 s[                                        ] | 0% Completed | 21.42 s[                                        ] | 0% Completed | 21.57 s[                                        ] | 0% Completed | 21.67 s[                                        ] | 0% Completed | 21.78 s[                                        ] | 0% Completed | 21.89 s[                                        ] | 0% Completed | 22.00 s[                                        ] | 0% Completed | 22.11 s[                                        ] | 0% Completed | 22.22 s[                                        ] | 0% Completed | 22.33 s[                                        ] | 0% Completed | 22.45 s[                                        ] | 0% Completed | 22.55 s[                                        ] | 0% Completed | 22.66 s[                                        ] | 0% Completed | 22.77 s[                                        ] | 0% Completed | 22.87 s[                                        ] | 0% Completed | 22.98 s[                                        ] | 0% Completed | 23.09 s[                                        ] | 0% Completed | 23.20 s[                                        ] | 0% Completed | 23.31 s[                                        ] | 0% Completed | 23.42 s[                                        ] | 0% Completed | 23.52 s[                                        ] | 0% Completed | 23.62 s[                                        ] | 0% Completed | 23.73 s[                                        ] | 0% Completed | 23.84 s
+
+エラーが発生しました: 429 Client Error: Too Many Requests for url: https://huggingface.co/datasets/allenai/c4/resolve/main/en/c4-train.00017-of-01024.json.gz
+Requirement already satisfied: datasets in ./250/lib/python3.12/site-packages (3.6.0)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from datasets) (3.13.1)
+Requirement already satisfied: numpy>=1.17 in ./250/lib/python3.12/site-packages (from datasets) (2.1.2)
+Requirement already satisfied: pyarrow>=15.0.0 in ./250/lib/python3.12/site-packages (from datasets) (20.0.0)
+Requirement already satisfied: dill<0.3.9,>=0.3.0 in ./250/lib/python3.12/site-packages (from datasets) (0.3.8)
+Requirement already satisfied: pandas in ./250/lib/python3.12/site-packages (from datasets) (2.3.0)
+Requirement already satisfied: requests>=2.32.2 in ./250/lib/python3.12/site-packages (from datasets) (2.32.4)
+Requirement already satisfied: tqdm>=4.66.3 in ./250/lib/python3.12/site-packages (from datasets) (4.67.1)
+Requirement already satisfied: xxhash in ./250/lib/python3.12/site-packages (from datasets) (3.5.0)
+Requirement already satisfied: multiprocess<0.70.17 in ./250/lib/python3.12/site-packages (from datasets) (0.70.16)
+Requirement already satisfied: fsspec<=2025.3.0,>=2023.1.0 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2024.6.1)
+Requirement already satisfied: huggingface-hub>=0.24.0 in ./250/lib/python3.12/site-packages (from datasets) (0.33.0)
+Requirement already satisfied: packaging in ./250/lib/python3.12/site-packages (from datasets) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from datasets) (6.0.2)
+Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.12.13)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2.6.1)
+Requirement already satisfied: aiosignal>=1.1.2 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.3.2)
+Requirement already satisfied: attrs>=17.3.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (25.3.0)
+Requirement already satisfied: frozenlist>=1.1.1 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.7.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (6.5.1)
+Requirement already satisfied: propcache>=0.2.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (0.3.2)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.20.1)
+Requirement already satisfied: idna>=2.0 in ./250/lib/python3.12/site-packages (from yarl<2.0,>=1.17.0->aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.10)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (3.4.2)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2025.4.26)
+Requirement already satisfied: python-dateutil>=2.8.2 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: tzdata>=2022.7 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: six>=1.5 in ./250/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas->datasets) (1.17.0)
+Requirement already satisfied: huggingface_hub in ./250/lib/python3.12/site-packages (0.33.0)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from huggingface_hub) (3.13.1)
+Requirement already satisfied: fsspec>=2023.5.0 in ./250/lib/python3.12/site-packages (from huggingface_hub) (2024.6.1)
+Requirement already satisfied: packaging>=20.9 in ./250/lib/python3.12/site-packages (from huggingface_hub) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from huggingface_hub) (6.0.2)
+Requirement already satisfied: requests in ./250/lib/python3.12/site-packages (from huggingface_hub) (2.32.4)
+Requirement already satisfied: tqdm>=4.42.1 in ./250/lib/python3.12/site-packages (from huggingface_hub) (4.67.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface_hub) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface_hub) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (2025.4.26)
+Requirement already satisfied: dask in ./250/lib/python3.12/site-packages (2025.5.1)
+Requirement already satisfied: click>=8.1 in ./250/lib/python3.12/site-packages (from dask) (8.2.1)
+Requirement already satisfied: cloudpickle>=3.0.0 in ./250/lib/python3.12/site-packages (from dask) (3.1.1)
+Requirement already satisfied: fsspec>=2021.09.0 in ./250/lib/python3.12/site-packages (from dask) (2024.6.1)
+Requirement already satisfied: packaging>=20.0 in ./250/lib/python3.12/site-packages (from dask) (25.0)
+Requirement already satisfied: partd>=1.4.0 in ./250/lib/python3.12/site-packages (from dask) (1.4.2)
+Requirement already satisfied: pyyaml>=5.3.1 in ./250/lib/python3.12/site-packages (from dask) (6.0.2)
+Requirement already satisfied: toolz>=0.10.0 in ./250/lib/python3.12/site-packages (from dask) (1.0.0)
+Requirement already satisfied: locket in ./250/lib/python3.12/site-packages (from partd>=1.4.0->dask) (1.0.0)
+==================================================
+Starting preprocessing for dataset: c4
+==================================================
+Step 1: Downloading C4 dataset...
+C4データセットの先頭10,000,000件のダウンロードと変換を開始します...
+保存先ファイル: /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4.jsonl
+
+'/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4.jsonl' の保存が完了しました。 (10,000,000件)
+
+すべての処理が完了しました。
+Download complete. Raw data saved in /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4
+--------------------------------------------------
+Step 2: Running Megatron preprocessing...
+[2025-06-27 22:37:45,072] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:37:45,097] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:37:50,711] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Warning: Apex is not installed. High-performance LayerNorm will not be available.
+Requirement already satisfied: datasets in ./250/lib/python3.12/site-packages (3.6.0)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from datasets) (3.13.1)
+Requirement already satisfied: numpy>=1.17 in ./250/lib/python3.12/site-packages (from datasets) (2.1.2)
+Requirement already satisfied: pyarrow>=15.0.0 in ./250/lib/python3.12/site-packages (from datasets) (20.0.0)
+Requirement already satisfied: dill<0.3.9,>=0.3.0 in ./250/lib/python3.12/site-packages (from datasets) (0.3.8)
+Requirement already satisfied: pandas in ./250/lib/python3.12/site-packages (from datasets) (2.3.0)
+Requirement already satisfied: requests>=2.32.2 in ./250/lib/python3.12/site-packages (from datasets) (2.32.4)
+Requirement already satisfied: tqdm>=4.66.3 in ./250/lib/python3.12/site-packages (from datasets) (4.67.1)
+Requirement already satisfied: xxhash in ./250/lib/python3.12/site-packages (from datasets) (3.5.0)
+Requirement already satisfied: multiprocess<0.70.17 in ./250/lib/python3.12/site-packages (from datasets) (0.70.16)
+Requirement already satisfied: fsspec<=2025.3.0,>=2023.1.0 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2024.6.1)
+Requirement already satisfied: huggingface-hub>=0.24.0 in ./250/lib/python3.12/site-packages (from datasets) (0.33.0)
+Requirement already satisfied: packaging in ./250/lib/python3.12/site-packages (from datasets) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from datasets) (6.0.2)
+Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in ./250/lib/python3.12/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.12.13)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (2.6.1)
+Requirement already satisfied: aiosignal>=1.1.2 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.3.2)
+Requirement already satisfied: attrs>=17.3.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (25.3.0)
+Requirement already satisfied: frozenlist>=1.1.1 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.7.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (6.5.1)
+Requirement already satisfied: propcache>=0.2.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (0.3.2)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in ./250/lib/python3.12/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (1.20.1)
+Requirement already satisfied: idna>=2.0 in ./250/lib/python3.12/site-packages (from yarl<2.0,>=1.17.0->aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets) (3.10)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface-hub>=0.24.0->datasets) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (3.4.2)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests>=2.32.2->datasets) (2025.4.26)
+Requirement already satisfied: python-dateutil>=2.8.2 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: tzdata>=2022.7 in ./250/lib/python3.12/site-packages (from pandas->datasets) (2025.2)
+Requirement already satisfied: six>=1.5 in ./250/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas->datasets) (1.17.0)
+Requirement already satisfied: huggingface_hub in ./250/lib/python3.12/site-packages (0.33.0)
+Requirement already satisfied: filelock in ./250/lib/python3.12/site-packages (from huggingface_hub) (3.13.1)
+Requirement already satisfied: fsspec>=2023.5.0 in ./250/lib/python3.12/site-packages (from huggingface_hub) (2024.6.1)
+Requirement already satisfied: packaging>=20.9 in ./250/lib/python3.12/site-packages (from huggingface_hub) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./250/lib/python3.12/site-packages (from huggingface_hub) (6.0.2)
+Requirement already satisfied: requests in ./250/lib/python3.12/site-packages (from huggingface_hub) (2.32.4)
+Requirement already satisfied: tqdm>=4.42.1 in ./250/lib/python3.12/site-packages (from huggingface_hub) (4.67.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./250/lib/python3.12/site-packages (from huggingface_hub) (4.12.2)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in ./250/lib/python3.12/site-packages (from huggingface_hub) (1.1.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./250/lib/python3.12/site-packages (from requests->huggingface_hub) (2025.4.26)
+Requirement already satisfied: dask in ./250/lib/python3.12/site-packages (2025.5.1)
+Requirement already satisfied: click>=8.1 in ./250/lib/python3.12/site-packages (from dask) (8.2.1)
+Requirement already satisfied: cloudpickle>=3.0.0 in ./250/lib/python3.12/site-packages (from dask) (3.1.1)
+Requirement already satisfied: fsspec>=2021.09.0 in ./250/lib/python3.12/site-packages (from dask) (2024.6.1)
+Requirement already satisfied: packaging>=20.0 in ./250/lib/python3.12/site-packages (from dask) (25.0)
+Requirement already satisfied: partd>=1.4.0 in ./250/lib/python3.12/site-packages (from dask) (1.4.2)
+Requirement already satisfied: pyyaml>=5.3.1 in ./250/lib/python3.12/site-packages (from dask) (6.0.2)
+Requirement already satisfied: toolz>=0.10.0 in ./250/lib/python3.12/site-packages (from dask) (1.0.0)
+Requirement already satisfied: locket in ./250/lib/python3.12/site-packages (from partd>=1.4.0->dask) (1.0.0)
+==================================================
+Starting preprocessing for dataset: c4
+==================================================
+Step 1: Downloading C4 dataset...
+Download complete. Raw data saved in /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4
+--------------------------------------------------
+Step 2: Running Megatron preprocessing...
+[2025-06-27 22:58:31,971] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:58:31,987] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:58:37,412] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Are you sure you don't want to split sentences?
+[2025-06-27 22:58:43,840] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:58:43,854] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:58:47,342] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+Opening /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4.jsonl
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+[2025-06-27 22:59:04,294] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:04,318] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:04,372] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:04,394] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:04,395] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:04,417] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:04,734] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:04,756] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:04,778] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:04,800] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:04,805] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:04,828] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,264] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,285] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,388] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,402] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,407] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,421] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,428] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,442] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,450] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,462] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,493] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,495] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,513] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,514] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,525] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,542] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,544] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,544] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,562] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,564] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,564] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,573] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,585] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,594] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,632] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,642] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,655] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,665] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,671] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,675] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,684] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,693] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,697] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,698] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,707] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,707] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,710] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,718] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,721] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,730] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,733] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,740] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,743] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,748] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,757] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,761] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,765] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,770] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,778] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,782] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,786] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,788] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,808] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,809] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,810] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,818] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,830] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,830] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,839] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,854] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,865] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,880] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,885] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,890] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,898] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,901] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,902] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,902] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,910] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,911] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,917] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,918] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,921] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,922] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,925] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,926] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,926] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:05,931] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,942] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,945] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,946] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:05,946] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:06,166] [WARNING] [real_accelerator.py:209:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+[2025-06-27 22:59:06,190] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+[2025-06-27 22:59:12,597] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:12,630] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:13,858] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:14,668] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:14,670] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:14,770] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:15,393] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:15,656] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:15,752] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:15,779] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:15,862] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:15,881] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:15,923] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:15,966] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,111] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,113] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,161] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,170] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,181] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,184] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,193] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,203] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,225] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,254] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,271] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,286] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,322] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,336] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,343] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,343] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,346] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,374] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,374] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,378] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,393] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+> building BertWordPieceCase tokenizer ...
+[2025-06-27 22:59:16,405] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+[2025-06-27 22:59:16,416] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+[2025-06-27 22:59:16,441] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,465] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,465] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,471] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,479] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,480] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,491] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,510] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,543] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,551] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-06-27 22:59:16,620] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+> building BertWordPieceCase tokenizer ...
+> building BertWordPieceCase tokenizer ...
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+ > padded vocab (size: 30524) with 68 dummy tokens (new size: 30592)
+Time to startup: 0.09395313262939453
+Finished processing c4
+Preprocessed .bin and .idx files are located at: /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4
+==================================================
+All datasets have been processed.

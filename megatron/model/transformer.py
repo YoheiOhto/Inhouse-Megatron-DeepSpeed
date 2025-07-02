@@ -21,6 +21,7 @@ from megatron.model.fused_softmax import FusedScaleMaskSoftmax
 from megatron.model.fused_bias_gelu import bias_gelu_impl
 from megatron.model.rotary_pos_embedding import apply_rotary_pos_emb
 from megatron.model.utils import attention_mask_func, openai_gelu, erf_gelu
+from .rotary_pos_embedding import apply_rotary_pos_emb, RotaryEmbedding
 import deepspeed
 from deepspeed.moe.layer import MoE
 from deepspeed.accelerator import get_accelerator
@@ -143,6 +144,12 @@ class ParallelMLP(MegatronModule):
             def squared_relu(x):
                 return torch.pow(F.relu(x), 2)
             self.activation_func = squared_relu
+        elif args.geglu:
+            def geglu(x):
+                x = torch.chunk(x, 2, dim=-1)
+                return F.gelu(x[0]) * x[1]
+            self.activation_func = geglu
+            print("Using GEGLU activation function")
         else:
             self.bias_gelu_fusion = args.bias_gelu_fusion
             self.activation_func = F.gelu
@@ -513,7 +520,9 @@ class ParallelAttention(MegatronModule):
 
     def __init__(self, config, layer_number,
                  attention_type=AttnType.self_attn,
-                 attn_mask_type=AttnMaskType.padding):
+                 attn_mask_type=AttnMaskType.padding,
+                 is_global_attention=True,
+                 local_window_size=256):
         super(ParallelAttention, self).__init__()
         args = get_args()
         self.layer_number = max(1, layer_number)
@@ -524,6 +533,19 @@ class ParallelAttention(MegatronModule):
         self.num_attention_heads = config.num_attention_heads
         self.num_key_value_heads = config.num_key_value_heads
         self.use_gqa = (self.num_attention_heads != self.num_key_value_heads)
+        self.is_global_attention = is_global_attention
+        self.local_window_size = local_window_size
+
+        self.use_switch_attention_rope = args.use_switch_attention_rope
+        if self.use_switch_attention_rope:
+            if self.is_global_attention:
+                theta = args.global_rope_theta
+            else:
+                theta = args.local_rope_theta
+            rotary_dim = config.kv_channels
+            if args.rotary_percent < 1.0:
+                rotary_dim = int(rotary_dim * args.rotary_percent)
+            self.rotary_pos_emb = RotaryEmbedding(rotary_dim, theta=theta)
 
         self.use_flash_attn = (args.use_flash_attn_v1 or args.use_flash_attn_triton or args.use_flash_attn_v2 or \
             args.use_flash_attn_builder) \
@@ -698,6 +720,26 @@ class ParallelAttention(MegatronModule):
                 encoder_output=None, inference_params=None,
                 rotary_pos_emb=None):
         # hidden_states: [sq, b, h]
+        if self.use_switch_attention_rope:
+            seq_len = hidden_states.size(0)
+            rotary_pos_emb_cos, rotary_pos_emb_sin = self.rotary_pos_emb(seq_len)
+            rotary_pos_emb = (rotary_pos_emb_cos.to(hidden_states.dtype), 
+                              rotary_pos_emb_sin.to(hidden_states.dtype))
+
+        if not self.is_global_attention:
+
+            seq_len_q = hidden_states.size(0)
+            seq_len_k = hidden_states.size(0) 
+            
+            window_size = self.local_window_size
+            
+            q_indices = torch.arange(seq_len_q, device=hidden_states.device).view(-1, 1)
+            k_indices = torch.arange(seq_len_k, device=hidden_states.device).view(1, -1)
+            
+            relative_indices = k_indices - q_indices
+            local_mask = (relative_indices >= -window_size) & (relative_indices <= window_size)
+
+            attention_mask = attention_mask & local_mask.unsqueeze(0).unsqueeze(0)
 
         # =================================================
         # Pre-allocate memory for key-values for inference.
@@ -987,6 +1029,7 @@ class ParallelTransformerLayer(MegatronModule):
         super(ParallelTransformerLayer, self).__init__()
         self.layer_number = layer_number
         self.layer_type = layer_type
+        self.skip_input_layernorm = (self.layer_number == 0)
 
         self.apply_residual_connection_post_layernorm \
             = config.apply_residual_connection_post_layernorm
@@ -994,6 +1037,13 @@ class ParallelTransformerLayer(MegatronModule):
         self.bf16 = config.bf16
         self.fp32_residual_connection = config.fp32_residual_connection
 
+        is_global_attention = True
+        if args.use_switch_attention:
+            if layer_number % args.global_attn_every_n_layers != 0:
+                is_global_attention = False
+        print(f"Layer {self.layer_number}: "
+              f"use_switch_attention={args.use_switch_attention}, "
+              f"is_global={is_global_attention}")
         # Layernorm on the input data.
         if args.normalization == 'layernorm':
             if get_accelerator().device_name() == 'cuda':
@@ -1020,6 +1070,7 @@ class ParallelTransformerLayer(MegatronModule):
             self.self_attention = ParallelAttention(
                 config,
                 layer_number,
+                is_global_attention=is_global_attention,                
                 attention_type=AttnType.self_attn,
                 attn_mask_type=self_attn_mask_type)
             
@@ -1052,6 +1103,7 @@ class ParallelTransformerLayer(MegatronModule):
             self.inter_attention = ParallelAttention(
                 config,
                 layer_number,
+                is_global_attention=is_global_attention,
                 attention_type=AttnType.cross_attn)
             # Layernorm on the attention output.
             if args.normalization == 'layernorm':
@@ -1336,9 +1388,12 @@ class ParallelTransformerLayer(MegatronModule):
                 rotary_pos_emb=None,
                 aggregated_moe_loss=None):
         # hidden_states: [s, b, h]
+        if self.skip_input_layernorm:
+            print("Skipping input layernorm for layer %d" % self.layer_number)
+            layernorm_output = hidden_states
+        else:
+            layernorm_output = self.input_layernorm(hidden_states)
 
-        # Layer norm at the beginning of the transformer layer.
-        layernorm_output = self.input_layernorm(hidden_states)
 
         # Self attention.
         try:

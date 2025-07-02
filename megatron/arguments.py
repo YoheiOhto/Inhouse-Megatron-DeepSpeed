@@ -494,6 +494,10 @@ def core_transformer_config_from_args(args):
         kw_args['activation_func'] = F.silu
         kw_args['gated_linear_unit'] = True
         kw_args['bias_gelu_fusion'] = False
+    if args.geglu:
+        kw_args['activation_func'] = F.gelu
+        kw_args['gated_linear_unit'] = True
+        kw_args['bias_gelu_fusion'] = False
     if args.init_method_xavier_uniform:
         kw_args['init_method'] = torch.nn.init.xavier_uniform_
         kw_args['scaled_init_method'] = torch.nn.init.xavier_uniform_
@@ -649,6 +653,9 @@ def _add_network_size_args(parser):
                        help='Options for layer normalization type:'
                             '  layernorm'
                             '  rmsnorm')
+    group.add_argument('--layernorm-embedding', action='store_true',
+                       help='If set, use layernorm on the input embeddings. '
+                       'This is useful for training BERT-like models.')
     group.add_argument('--layernorm-epsilon', type=float, default=1e-5,
                        help='Layer norm epsilon.')
     group.add_argument('--apply-layernorm-1p', action='store_true',
@@ -669,6 +676,8 @@ def _add_network_size_args(parser):
                        help='Use squared relu activation instead of default gelu')
     group.add_argument('--swiglu', action='store_true',
                        help='Use gated linear units and SiLU activation instead of default gelu')
+    group.add_argument('--geglu', action='store_true',
+                       help='Use gated linear units and glu activation instead of default gelu')
     group.add_argument('--onnx-safe', type=bool, required=False,
                        help='Use workarounds for known problems with '
                        'Torch ONNX exporter')
@@ -684,6 +693,18 @@ def _add_network_size_args(parser):
     group.add_argument('--kill-switch-file', type=str, default=None,
                        help='Location of kill switch file. '
                             'If found will automatically exit the program at runtime.')
+    parser.add_argument('--use-switch-attention', action='store_true',
+                        help='Use Switch Attention instead of standard attention.')
+    parser.add_argument('--use-switch-attention-rope', action='store_true',
+                        help='Use Switch Attention instead of standard attention.')
+    parser.add_argument('--global-rope-theta', type=float, default=10000.0,
+                        help='Theta for RoPE in global attention layers.')
+    parser.add_argument('--local-rope-theta', type=float, default=10000.0,
+                        help='Theta for RoPE in local sliding window attention layers.')
+    parser.add_argument('--global-attn-every-n-layers', type=int, default=3,
+                        help='Frequency of global attention layers.')
+    parser.add_argument('--local-window-size', type=int, default=256,
+                        help='Window size for local sliding attention.')
     return parser
 
 

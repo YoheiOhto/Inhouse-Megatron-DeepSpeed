@@ -214,9 +214,9 @@ def pretrain(train_valid_test_dataset_provider,
     # for knowledge distillation. Users do not need to set it in the command
     # line to use kd, but users do need to provide teacher model configurations
     # like args.num_layers_teacher as described in setup_teacher_model()
-    # args.teacher_model = None
-    # if args.mos or args.kd: # Set up teacher model
-    #     args.teacher_model = setup_teacher_model(args, model_provider)
+    args.teacher_model = None
+    if args.mos or args.kd: # Set up teacher model
+        args.teacher_model = setup_teacher_model(args, model_provider)
 
     # Print setup timing.
     print_rank_0('done with setup ...')

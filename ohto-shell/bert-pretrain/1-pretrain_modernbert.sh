@@ -1,9 +1,12 @@
 #!/bin/sh
 #PBS -q short-g
-#PBS -l select=2
+#PBS -l select=4
+#PBS -l walltime=6:00:00
 #PBS -W group_list=gg17
 #PBS -o test.out
 #PBS -e test.err
+
+jobname="modernbert-pubmed-test-4gpus-warmup-10000"
 
 module purge
 module load cmake
@@ -19,12 +22,15 @@ pyenv local 3.12.4
 cd ~/env/llm-pyenv-3
 source ./250/bin/activate
 
+export LD_LIBRARY_PATH=/work/opt/local/aarch64/cores/jupyterlab/4.3.5/python/3.12.8/lib:\
+$LD_LIBRARY_PATH
+
 dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=16
-lr=1e-4
+global_batch_size=384
+lr=8e-4
 min_lr=1e-5
 
 ## BERT 110M (same config as original BERT-Base model)
@@ -45,7 +51,7 @@ train_iters=$((${train_iters_in_million} * 10000)) # 2 * 10000 = 20000
 
 ###############################################################################
 ### lr configs
-lr_warmup_iters=100 # これが lr_warmup_steps に対応
+lr_warmup_iters=10000
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
 lr_decay_style="linear"
@@ -111,8 +117,6 @@ log_optimizer_state="true"
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 host="${HOSTNAME}" # This will be the hostname of the node running this script (master PBS job)
 
-jobname="bert-pubmed-test"
-
 # BLEND DATASET
 pubmed_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pubmed/pubmed_30000/pubmed_text_document"
 weight_pubmed=1.0
@@ -124,7 +128,7 @@ nih_books_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/nih_books/pu
 weight_nih_books=0.0
 # Combine the datasets into a single data path
 data_path="${weight_pubmed} ${pubmed_path} ${weight_pmc} ${pmc_path} ${weight_fda_label} ${fda_label_path} ${weight_nih_books} ${nih_books_path}"
-
+# data_path="/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/arxiv_text_document"
 vocab_path="/work/gg17/a97006/250519_modern_bert_0/tokenizer/vocab_30000.txt"
 
 num_workers=4
@@ -194,7 +198,11 @@ megatron_options=" \
     --tensorboard-dir ${tensorboard_path} \
     --wandb-project deepspeed-megatron \
     --wandb-exp-name test_2gpus \
-    --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/users/a97006/project/bert_with_pile"
+    --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/users/a97006/project/bert_with_pile  \
+    --global-attn-every-n-layers 3 \
+    --local-window-size 128 \
+    --global-rope-theta 160000 \
+    --local-rope-theta 10000"
 
 if [ "${activation_checkpoint}" = "true" ]; then
 megatron_options="${megatron_options} \
@@ -354,6 +362,7 @@ echo "--------------------------------------------------------------------------
 echo "mpirun ${OMPI_MCA_mca_base_env_list} \\"
 
 export CUDA_HOME="/work/opt/local/aarch64/cores/cuda/12.6"
+export CUDA_LAUNCH_BLOCKING=1
 unset OMPI_MCA_mca_base_env_list
 mpirun ${MPIRUN_OPTIONS} \
     ${TORCHRUN_CMD} &>> "${LOG_FILE}"

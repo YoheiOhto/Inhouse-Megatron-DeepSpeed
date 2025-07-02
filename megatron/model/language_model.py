@@ -9,6 +9,7 @@ import torch.nn.functional as F
 from megatron import get_args
 from megatron.core import mpu, tensor_parallel
 from megatron.core.enums import ModelType
+from megatron.model import LayerNorm
 
 from .enums import AttnMaskType, LayerType
 from .module import MegatronModule
@@ -418,6 +419,12 @@ class TransformerLanguageModel(MegatronModule):
                                        config,
                                        self.num_tokentypes,
                                        args.embedding_weights_in_fp32)
+            if args.layernorm_embedding:            
+                self.embedding_layernorm = LayerNorm(
+                    config.hidden_size,
+                    eps=config.layernorm_epsilon,
+                    sequence_parallel=config.sequence_parallel
+                )
             self._embedding_key = 'embedding'
 
         # Rotary positional embeddings
@@ -524,6 +531,8 @@ class TransformerLanguageModel(MegatronModule):
         if self.pre_process:
             encoder_input = self.embedding(enc_input_ids, enc_position_ids,
                                            tokentype_ids=tokentype_ids)
+            if args.layernorm_embedding:    
+                encoder_input = self.embedding_layernorm(encoder_input)
         else:
             encoder_input = None
 
