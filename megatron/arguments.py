@@ -1360,6 +1360,11 @@ def _add_data_args(parser):
                        help='Force to use certain index file.')
     group.add_argument('--repeated-dataloader', action='store_true',
                        help='Once all the data has been loaded, reuse the DataLoader.')
+    group.add_argument('--use-sliding-window', action='store_true',
+                    help='If set, uses a sliding window approach for creating samples. '
+                            'Should be used with --bert-no-binary-head.')
+    group.add_argument('--sliding-window-stride', type=int, default=512,
+                    help='Stride for the sliding window. Default is max_seq_length.')
     return parser
 
 

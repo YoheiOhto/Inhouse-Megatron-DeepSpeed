@@ -1,16 +1,15 @@
 #!/bin/sh
 #PBS -q regular-c
 #PBS -l select=1
-#PBS -W group_list=gg17
-#PBS -o preprocess.out
-#PBS -e preprocess.err
+#PBS -W group_list=gd43
+#PBS -o preprocess_sw_5.out
+#PBS -e preprocess_sw_5.err
 
 module purge
 module load cmake
 module load gcc
 
 source /work/gg17/a97006/.c_bashrc
-
 cd ~/env/env-c
 source ./250/bin/activate
 
@@ -19,16 +18,15 @@ wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e
 set -e
 
 BASE_DIR="/work/gg17/a97006/250519_modern_bert_0"
-SCRIPT_PATH="${BASE_DIR}/Inhouse-Megatron-DeepSpeed/tools/preprocess_data.py"
-VOCAB_FILE="${BASE_DIR}/tokenizer/vocab_30000.txt"
+SCRIPT_PATH="${BASE_DIR}/Inhouse-Megatron-DeepSpeed/tools/preprocess_data_sw.py"
+VOCAB_FILE="${BASE_DIR}/tokenizer/vocab_50000.txt"
 
 TOKENIZER_TYPE="BertWordPieceCase"
-WORKERS=48
+WORKERS=12
 WANDB_PROJECT="med_preprocess"
-DATE_TAG="250613" 
+DATE_TAG="250704"
 
-DATASETS="pubmed"
-
+DATASETS="pubmed nih_books fda_label"
 for dataset_name in ${DATASETS}; do
 
     echo "=================================================="
@@ -36,9 +34,9 @@ for dataset_name in ${DATASETS}; do
     echo "=================================================="
 
     input_file="${BASE_DIR}/json/${dataset_name}.jsonl"
-    output_prefix_dir="${BASE_DIR}/preprocessed/${dataset_name}/pubmed_30000-1024"
+    output_prefix_dir="${BASE_DIR}/preprocessed/${dataset_name}/pubmed_50000-1024"
     output_prefix="${output_prefix_dir}/${dataset_name}"
-    wandb_name="${DATE_TAG}-miyabi-${dataset_name}-30000-1024"
+    wandb_name="${DATE_TAG}-miyabi-${dataset_name}-50000-1024"
 
     mkdir -p "${output_prefix_dir}"
 
@@ -50,7 +48,8 @@ for dataset_name in ${DATASETS}; do
         --workers "${WORKERS}" \
         --wandb-project "${WANDB_PROJECT}" \
         --wandb-name "${wandb_name}" \
-        --seq-length 1024
+        --seq-length 1020 \
+        --sliding-window-stride 512
 
     echo "Finished processing ${dataset_name}"
     echo ""

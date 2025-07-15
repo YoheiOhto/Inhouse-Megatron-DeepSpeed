@@ -7,7 +7,9 @@ dist/
 
 # binaries
 *.so
-
+*.err
+*.out
+*.log
 # tmp files
 *.swp
 

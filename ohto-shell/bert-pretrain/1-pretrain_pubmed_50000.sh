@@ -1,9 +1,9 @@
 #!/bin/sh
-#PBS -q short-g
-#PBS -l select=2
+#PBS -q regular-g
+#PBS -l select=32
 #PBS -W group_list=gg17
-#PBS -o med_30000.out
-#PBS -e med_30000.err
+#PBS -o med_50000_pub.out
+#PBS -e med_50000_pub.err
 
 module purge
 module load cmake
@@ -19,13 +19,13 @@ pyenv local 3.12.4
 cd ~/env/llm-pyenv-3
 source ./250/bin/activate
 
-jobname="bert-full-med-150000-test-e89"
+jobname="med-bert-full-50000-pub-mask30"
 
 dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=32
+global_batch_size=512
 lr=1e-4
 min_lr=1e-5
 
@@ -38,20 +38,20 @@ init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
 # train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
-train_iters=260697
+train_iters=44900
 ###############################################################################
 ### lr configs
-lr_warmup_iters=7000 # これが lr_warmup_steps に対応
+lr_warmup_iters=2000 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 # lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
-lr_decay_iters=260697 # これが lr_decay_steps に対応
+lr_decay_iters=44900 # これが lr_decay_steps に対応
 lr_decay_style="linear"
 ####################################################
 ### Parallelism configs
 mp_size=1
 pp_size=1
 no_pp="true"
-zero_stage=1
+zero_stage=0
 
 ### GPU and Node calculation
 # Get unique node names from PBS_NODEFILE
@@ -94,13 +94,12 @@ if [ ${batch_size} -eq 0 ]; then
     echo "Warning: Calculated micro batch size is 0. Setting to 1. Check global_batch_size and dp_size."
     batch_size=1
 fi
-echo "INFO: ${batch_size} (micro batch size per GPU) : ${global_batch_size} (global batch size) / ${dp_size} (data parallel size)"
 ###############################################################################
 ### Misc configs
-log_interval=10000
-eval_iters=10
-eval_interval=10000
-num_save=100
+log_interval=1000
+eval_iters=1
+eval_interval=1000
+num_save=30
 save_interval=$((${train_iters} / ${num_save}))
 activation_checkpoint="false"
 log_optimizer_state="true"
@@ -110,23 +109,29 @@ current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 host="${HOSTNAME}" # This will be the hostname of the node running this script (master PBS job)
 
 # BLEND DATASET
-pubmed_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pubmed/pubmed_150000/pubmed_text_document"
-weight_pubmed=0.180
-pmc_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pmc/pubmed_150000/pmc_text_document"
-weight_pmc=0.799
-fda_label_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/fda_label/pubmed_150000/fda_label_text_document"
-weight_fda_label=0.005
-nih_books_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/nih_books/pubmed_150000/nih_books_text_document"
-weight_nih_books=0.016
+pubmed_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pubmed/pubmed_50000-1024/pubmed_text_sentence"
+pmc_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pmc/pubmed_50000-1024/pmc_text_sentence"
+fda_label_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/fda_label/pubmed_50000-1024/fda_label_text_sentence"
+nih_books_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/nih_books/pubmed_50000-1024/nih_books_text_sentence"
+
+# FDA: 5,015,267 samples
+weight_fda=0.0374
+# nih: 1,831,764 samples
+weight_nih_books=0.0137
+# PMC: 104,218,563 samples
+weight_pmc=0.7774
+# Pubmed: 22,993,153 samples
+weight_pubmed=0.1715
+
 # Combine the datasets into a single data path
 data_path="${weight_pubmed} ${pubmed_path} \
            ${weight_pmc} ${pmc_path} \
            ${weight_fda_label} ${fda_label_path} \
            ${weight_nih_books} ${nih_books_path}"
-# data_path="${pubmed_path}"
-vocab_path="/work/gg17/a97006/250519_modern_bert_0/tokenizer/vocab_150000.txt"
+data_path="${pubmed_path}"
+vocab_path="/work/gg17/a97006/250519_modern_bert_0/tokenizer/vocab_50000.txt"
 
-num_workers=1
+num_workers=4
 
 jobname="${jobname}-${model_size}B-iters-${train_iters_in_million}M"
 jobname="${jobname}-lr-${lr}-min-${min_lr}-wmup-${lr_warmup_iters}-dcy-${lr_decay_iters_in_million}M-sty-${lr_decay_style}"
@@ -153,7 +158,7 @@ mkdir -p ${tensorboard_path}
 data_options=" \
     --vocab-file ${vocab_path} \
     --data-path ${data_path} \
-    --num-workers 1 \
+    --num-workers 4 \
     --data-impl mmap"
 
 megatron_options=" \
@@ -172,6 +177,7 @@ megatron_options=" \
     --hidden-size ${hidden_size} \
     --num-attention-heads ${num_attn_heads} \
     --seq-length ${seq_len} \
+    --mask-prob 0.3 \
     --max-position-embeddings ${seq_len} \
     --train-iters ${train_iters} \
     --lr ${lr} \
@@ -199,10 +205,10 @@ megatron_options=" \
     --use-switch-attention-rope \
     --global-attn-every-n-layers 3 \
     --local-window-size 128 \
-    --wandb-project med-modern-bert \
+    --wandb-project med-modern-bert-true \
     --use-flash-attn-v2 \
     --no-position-embedding \
-    --wandb-exp-name full-med-150000-epoch-test \
+    --wandb-exp-name full-med-1-epoch-50000-pub \
     --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then
