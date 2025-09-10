@@ -1,6 +1,6 @@
 #!/bin/sh
 #PBS -q regular-g
-#PBS -l select=64
+#PBS -l select=2
 #PBS -W group_list=gg17
 #PBS -o med_50000.out
 #PBS -e med_50000.err
@@ -19,15 +19,16 @@ pyenv local 3.12.4
 cd ~/env/llm-pyenv-3
 source ./250/bin/activate
 
-jobname="med-bert-full-50000-merged"
+jobname="250806-completed-zero2-2"
 
 dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=1024
-lr=1e-4
-min_lr=1e-5
+# global_batch_size=1024
+global_batch_size=48
+lr=5e-4
+min_lr=1e-6
 
 ## BERT 110M (same config as original BERT-Base model)
 model_size=0.149
@@ -38,20 +39,20 @@ init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
 # train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
-train_iters=130000
+train_iters=32500
 ###############################################################################
 ### lr configs
-lr_warmup_iters=10000 # これが lr_warmup_steps に対応
+lr_warmup_iters=2500 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 # lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
-lr_decay_iters=130000 # これが lr_decay_steps に対応
-lr_decay_style="linear"
+lr_decay_iters=32500 # これが lr_decay_steps に対応
+lr_decay_style="constant"
 ####################################################
 ### Parallelism configs
 mp_size=1
 pp_size=1
 no_pp="true"
-zero_stage=0
+zero_stage=2
 
 ### GPU and Node calculation
 # Get unique node names from PBS_NODEFILE
@@ -90,6 +91,7 @@ if [ ${dp_size} -eq 0 ]; then
     exit 1
 fi
 batch_size=$(( ${global_batch_size} / ${dp_size} ))
+batch_size=24
 if [ ${batch_size} -eq 0 ]; then
     echo "Warning: Calculated micro batch size is 0. Setting to 1. Check global_batch_size and dp_size."
     batch_size=1
@@ -188,7 +190,7 @@ megatron_options=" \
     --eval-interval ${eval_interval} \
     --eval-iters ${eval_iters} \
     --save-interval ${save_interval} \
-    --weight-decay 1e-2 \
+    --weight-decay 1e-5 \
     --clip-grad 1.0 \
     --num-workers ${num_workers} \
     --fp16 \
@@ -203,12 +205,14 @@ megatron_options=" \
     --tensorboard-dir ${tensorboard_path} \
     --use-switch-attention \
     --use-switch-attention-rope \
+    --global-rope-theta 160000 \
+    --local-rope-theta 10000 \
     --global-attn-every-n-layers 3 \
     --local-window-size 128 \
     --wandb-project med-modern-bert-true \
     --use-flash-attn-v2 \
     --no-position-embedding \
-    --wandb-exp-name full-med-1-epoch-50000-merged \
+    --wandb-exp-name 250814-completed \
     --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then

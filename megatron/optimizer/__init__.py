@@ -14,6 +14,7 @@ from .distrib_optimizer import DistributedOptimizer
 from .grad_scaler import ConstantGradScaler, DynamicGradScaler
 from .optimizer import Float16OptimizerWithFloat16Params, FP32Optimizer
 
+from optimi import StableAdamW
 
 def get_param_groups(modules,
                      no_weight_decay_cond,
@@ -108,6 +109,26 @@ def get_megatron_optimizer(model,
                             lr=args.lr,
                             weight_decay=args.weight_decay,
                             momentum=args.sgd_momentum)
+        elif args.optimizer == 'stable_adamw':
+            optimi_param_groups = []
+            for group in param_groups:
+                new_group = {
+                    'params': group['params'],
+                    'weight_decay': args.weight_decay * group.get('wd_mult', 1.0)
+                }
+                if group.get('lr_mult', 1.0) != 1.0:
+                    new_group['lr'] = args.lr * group.get('lr_mult')
+                optimi_param_groups.append(new_group)
+            optimizer = StableAdamW(optimi_param_groups,
+                                    lr=args.lr,
+                                    weight_decay=args.weight_decay,
+                                    betas=(args.adam_beta1, args.adam_beta2),
+                                    eps=args.adam_eps,
+                                    decouple_lr=args.stable_adamw_decouple_lr,
+                                    max_lr=args.lr if args.stable_adamw_decouple_lr else None,
+                                    kahan_sum=args.stable_adamw_kahan_sum,
+                                    triton=False
+                                    )
         else:
             raise Exception('{} optimizer is not supported.'.format(
             args.optimizer))

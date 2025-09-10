@@ -28,3 +28,7 @@ dataset/
 
 model/
 ohto-shell/llama-cpt/dl_hf_llama.py
+ohto-shell/model_convert/modeling_modernbert.py
+
+tools/convert_checkpoint/modern_bert_converter.py
+tools/convert_checkpoint/modern_bert_converter_bin.py

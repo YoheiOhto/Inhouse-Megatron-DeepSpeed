@@ -189,6 +189,8 @@ megatron_options=" \
     --tensorboard-dir ${tensorboard_path} \
     --use-switch-attention \
     --use-switch-attention-rope \
+    --global-rope-theta 10000 \
+    --local-rope-theta 10000 \
     --global-attn-every-n-layers 3 \
     --local-window-size 128 \
     --wandb-project med-modern-bert-true \

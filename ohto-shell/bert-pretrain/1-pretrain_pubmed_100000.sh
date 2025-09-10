@@ -1,7 +1,7 @@
 #!/bin/sh
 #PBS -q regular-g
 #PBS -l select=32
-#PBS -W group_list=gg17
+#PBS -W group_list=gd43
 #PBS -o med_100000-pub.out
 #PBS -e med_100000-pub.err
 
@@ -25,8 +25,8 @@ dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspee
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=512
-lr=1e-4
+global_batch_size=1024
+lr=8e-4
 min_lr=1e-5
 
 ## BERT 110M (same config as original BERT-Base model)
@@ -38,14 +38,14 @@ init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
 # train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
-train_iters=44760
+train_iters=22380
 ###############################################################################
 ### lr configs
-lr_warmup_iters=2000 # これが lr_warmup_steps に対応
+lr_warmup_iters=2230 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 # lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
-lr_decay_iters=44760 # これが lr_decay_steps に対応
-lr_decay_style="linear"
+lr_decay_iters=22380 # これが lr_decay_steps に対応
+lr_decay_style="constant"
 ####################################################
 ### Parallelism configs
 mp_size=1
@@ -94,6 +94,7 @@ if [ ${batch_size} -eq 0 ]; then
     echo "Warning: Calculated micro batch size is 0. Setting to 1. Check global_batch_size and dp_size."
     batch_size=1
 fi
+batch_size=16
 ###############################################################################
 ### Misc configs
 log_interval=1000
@@ -228,8 +229,8 @@ sed "s/CONFIG_BATCH_SIZE/${global_batch_size}/" ${template_json} \
     | sed "s/LOG_INTERVAL/${log_interval}/" \
     | sed "s/ZERO_STAGE/${zero_stage}/" \
     | sed "s/PRESCALE_GRAD/false/" \
-    | sed "s/CONFIG_FP16_ENABLED/true/" \
-    | sed "s/CONFIG_BF16_ENABLED/false/" \
+    | sed "s/CONFIG_FP16_ENABLED/false/" \
+    | sed "s/CONFIG_BF16_ENABLED/true/" \
       > ${config_json}
 else
 sed "s/CONFIG_BATCH_SIZE/${global_batch_size}/" ${template_json} \

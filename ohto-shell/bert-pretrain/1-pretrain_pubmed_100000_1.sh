@@ -1,9 +1,9 @@
 #!/bin/sh
 #PBS -q regular-g
-#PBS -l select=64
-#PBS -W group_list=gg17
-#PBS -o med_100000.out
-#PBS -e med_100000.err
+#PBS -l select=32
+#PBS -W group_list=gd43
+#PBS -o med_100000-pub.out
+#PBS -e med_100000-pub.err
 
 module purge
 module load cmake
@@ -19,13 +19,13 @@ pyenv local 3.12.4
 cd ~/env/llm-pyenv-3
 source ./250/bin/activate
 
-jobname="med-bert-full-100000-merged"
+jobname="med-bert-full-100000-pub-2-mask30"
 
 dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=1280
+global_batch_size=4096
 lr=8e-4
 min_lr=1e-5
 
@@ -38,13 +38,13 @@ init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
 # train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
-train_iters=1000000
+train_iters=22380
 ###############################################################################
 ### lr configs
-lr_warmup_iters=35800 # これが lr_warmup_steps に対応
+lr_warmup_iters=2230 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 # lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
-lr_decay_iters=1000000 # これが lr_decay_steps に対応
+lr_decay_iters=22380 # これが lr_decay_steps に対応
 lr_decay_style="constant"
 ####################################################
 ### Parallelism configs
@@ -94,12 +94,13 @@ if [ ${batch_size} -eq 0 ]; then
     echo "Warning: Calculated micro batch size is 0. Setting to 1. Check global_batch_size and dp_size."
     batch_size=1
 fi
+batch_size=16
 ###############################################################################
 ### Misc configs
 log_interval=1000
 eval_iters=1
 eval_interval=1000
-num_save=100
+num_save=30
 save_interval=$((${train_iters} / ${num_save}))
 activation_checkpoint="false"
 log_optimizer_state="true"
@@ -114,17 +115,20 @@ pmc_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pmc/pubmed_100000-
 fda_label_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/fda_label/pubmed_100000-1024/fda_label_text_sentence"
 nih_books_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/nih_books/pubmed_100000-1024/nih_books_text_sentence"
 
-weight_pubmed=0.1785
-weight_pmc=0.7854
-weight_fda_label=0.0282
-weight_nih_books=0.0081
+weight_fda=0.0370
+# nih: 1,778,928 samples
+weight_nih_books=0.0134
+# pmc: 103,161,018 samples
+weight_pmc=0.7770
+# pubmed: 22,918,219 samples
+weight_pubmed=0.1726
 
 # Combine the datasets into a single data path
 data_path="${weight_pubmed} ${pubmed_path} \
            ${weight_pmc} ${pmc_path} \
            ${weight_fda_label} ${fda_label_path} \
            ${weight_nih_books} ${nih_books_path}"
-data_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/4_merged/all_merged_100000-1024/4_merged_text_sentence"
+data_path="${pubmed_path}"
 vocab_path="/work/gg17/a97006/250519_modern_bert_0/tokenizer/vocab_100000.txt"
 
 num_workers=4
@@ -159,7 +163,6 @@ data_options=" \
 
 megatron_options=" \
     --bert-no-binary-head \
-    --dataloader-type cyclic \
     --disable-bias-linear \
     --override-opt_param-scheduler \
     --adam-beta1 0.9 \
@@ -174,8 +177,8 @@ megatron_options=" \
     --hidden-size ${hidden_size} \
     --num-attention-heads ${num_attn_heads} \
     --seq-length ${seq_len} \
-    --max-position-embeddings ${seq_len} \
     --mask-prob 0.3 \
+    --max-position-embeddings ${seq_len} \
     --train-iters ${train_iters} \
     --lr ${lr} \
     --min-lr ${min_lr} \
@@ -200,14 +203,12 @@ megatron_options=" \
     --tensorboard-dir ${tensorboard_path} \
     --use-switch-attention \
     --use-switch-attention-rope \
-    --global-rope-theta 10000 \
-    --local-rope-theta 10000 \
     --global-attn-every-n-layers 3 \
     --local-window-size 128 \
     --wandb-project med-modern-bert-true \
     --use-flash-attn-v2 \
     --no-position-embedding \
-    --wandb-exp-name merged-10000-10000 \
+    --wandb-exp-name full-med-1-epoch-100000-pub \
     --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then

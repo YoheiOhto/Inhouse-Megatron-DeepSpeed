@@ -1,6 +1,7 @@
 #!/bin/sh
 #PBS -q regular-g
-#PBS -l select=32
+#PBS -l select=10
+#PBS -l walltime=18:00:00
 #PBS -W group_list=gg17
 #PBS -o med_50000_pub.out
 #PBS -e med_50000_pub.err
@@ -19,33 +20,37 @@ pyenv local 3.12.4
 cd ~/env/llm-pyenv-3
 source ./250/bin/activate
 
-jobname="med-bert-full-50000-pub-mask30"
+jobname="250806-completed-pub-2-small"
 
 dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=512
-lr=1e-4
-min_lr=1e-5
+# global_batch_size=512
+global_batch_size=160 # This is the global batch size across all GPUs
+lr=5e-4
+min_lr=1e-6 
 
 ## BERT 110M (same config as original BERT-Base model)
 model_size=0.149
-num_layers=22
+num_layers=12
 hidden_size=768
 num_attn_heads=12
 init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
 # train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
-train_iters=44900
+train_iters=14370000
+# train_iters=44900
 ###############################################################################
 ### lr configs
-lr_warmup_iters=2000 # これが lr_warmup_steps に対応
+lr_warmup_iters=14370 # これが lr_warmup_steps に対応
+# lr_warmup_iters=4490 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 # lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
-lr_decay_iters=44900 # これが lr_decay_steps に対応
-lr_decay_style="linear"
+lr_decay_iters=14370000 # これが lr_decay_steps に対応
+# lr_decay_iters=4490
+lr_decay_style="linear" # linear, cosine, or constant
 ####################################################
 ### Parallelism configs
 mp_size=1
@@ -83,23 +88,24 @@ echo "INFO: Total GPUs for training (world size): ${num_gpus}"
 ## Data parallel size.
 # dp_size will be effectively the world_size for pure DP
 dp_size=$(( ${num_gpus} / (${pp_size} * ${mp_size}) ))
-
+dp_size=32
 ## Micro batch size per GPU
 if [ ${dp_size} -eq 0 ]; then
     echo "ERROR: dp_size is 0. Cannot divide by zero."
     exit 1
 fi
 batch_size=$(( ${global_batch_size} / ${dp_size} ))
+batch_size=16
 if [ ${batch_size} -eq 0 ]; then
     echo "Warning: Calculated micro batch size is 0. Setting to 1. Check global_batch_size and dp_size."
     batch_size=1
 fi
 ###############################################################################
 ### Misc configs
-log_interval=1000
+log_interval=3000
 eval_iters=1
-eval_interval=1000
-num_save=30
+eval_interval=3000
+num_save=10
 save_interval=$((${train_iters} / ${num_save}))
 activation_checkpoint="false"
 log_optimizer_state="true"
@@ -203,12 +209,14 @@ megatron_options=" \
     --tensorboard-dir ${tensorboard_path} \
     --use-switch-attention \
     --use-switch-attention-rope \
+    --global-rope-theta 160000 \
+    --local-rope-theta 10000 \
     --global-attn-every-n-layers 3 \
     --local-window-size 128 \
     --wandb-project med-modern-bert-true \
     --use-flash-attn-v2 \
     --no-position-embedding \
-    --wandb-exp-name full-med-1-epoch-50000-pub \
+    --wandb-exp-name 250806-completed-pub-2-small\
     --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then

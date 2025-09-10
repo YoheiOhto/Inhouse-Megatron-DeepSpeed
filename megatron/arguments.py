@@ -810,6 +810,12 @@ def _add_regularization_args(parser):
     group.add_argument('--adam-eps', type=float, default=1e-08,
                        help='Term added to the denominator to improve'
                        'numerical stability')
+    group.add_argument('--stable-adamw-decouple-lr', action='store_true',
+                       help='Use fully decoupled weight decay for StableAdamW. '
+                            'Requires max_lr to be set correctly.')
+    group.add_argument('--stable-adamw-kahan-sum', action='store_true',
+                       help='Enable Kahan summation for StableAdamW for better '
+                            'precision in low-precision training (fp16/bf16).')
     group.add_argument('--sgd-momentum', type=float, default=0.9,
                        help='Momentum factor for sgd')
 
@@ -958,8 +964,8 @@ def _add_training_args(parser):
     group.add_argument('--disable-bias-linear', action='store_false',
                        help='Disable bias in the linear layers',
                        dest='add_bias_linear')
-    group.add_argument('--optimizer', type=str, default='adam',
-                       choices=['adam', 'sgd'],
+    group.add_argument('--optimizer', type=str, default='stable_adamw',
+                       choices=['adam', 'sgd', 'stable_adamw'],
                        help='Optimizer function')
     group.add_argument('--dataloader-type', type=str, default=None,
                        choices=['single', 'cyclic'],

@@ -1,7 +1,7 @@
 #!/bin/sh
 #PBS -q regular-g
 #PBS -l select=64
-#PBS -W group_list=gg17
+#PBS -W group_list=gd43
 #PBS -o med_100000.out
 #PBS -e med_100000.err
 
@@ -13,19 +13,21 @@ module load cudnn/9.5.1.17
 module load ompi-cuda/4.1.6-12.6
 
 source /work/gg17/a97006/.g_bashrc
-pyenv install 3.12.4 # This might take time; consider preparing an env beforehand
-pyenv local 3.12.4
+# pyenv install 3.12.4 # This might take time; consider preparing an env beforehand
+# pyenv local 3.12.4
 
-cd ~/env/llm-pyenv-3
+cd ~/env/llm-pyenv-4
 source ./250/bin/activate
 
-jobname="med-bert-full-100000-merged"
+pip install torch-optimi
+
+jobname="250909_full_100000-4"
 
 dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=1280
+global_batch_size=5120
 lr=8e-4
 min_lr=1e-5
 
@@ -38,13 +40,13 @@ init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
 # train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
-train_iters=1000000
+train_iters=62100
 ###############################################################################
 ### lr configs
-lr_warmup_iters=35800 # これが lr_warmup_steps に対応
+lr_warmup_iters=20700 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 # lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
-lr_decay_iters=1000000 # これが lr_decay_steps に対応
+lr_decay_iters=41400 # これが lr_decay_steps に対応
 lr_decay_style="constant"
 ####################################################
 ### Parallelism configs
@@ -94,12 +96,13 @@ if [ ${batch_size} -eq 0 ]; then
     echo "Warning: Calculated micro batch size is 0. Setting to 1. Check global_batch_size and dp_size."
     batch_size=1
 fi
+batch_size=20
 ###############################################################################
 ### Misc configs
 log_interval=1000
 eval_iters=1
 eval_interval=1000
-num_save=100
+num_save=3
 save_interval=$((${train_iters} / ${num_save}))
 activation_checkpoint="false"
 log_optimizer_state="true"
@@ -163,7 +166,7 @@ megatron_options=" \
     --disable-bias-linear \
     --override-opt_param-scheduler \
     --adam-beta1 0.9 \
-    --adam-beta2 0.999 \
+    --adam-beta2 0.98 \
     --init-method-std ${init_std} \
     --tensor-model-parallel-size ${mp_size} \
     --lr-decay-iters ${lr_decay_iters} \
@@ -185,11 +188,12 @@ megatron_options=" \
     --eval-interval ${eval_interval} \
     --eval-iters ${eval_iters} \
     --save-interval ${save_interval} \
-    --weight-decay 1e-2 \
+    --weight-decay 1e-4 \
     --clip-grad 1.0 \
     --num-workers ${num_workers} \
     --bf16 \
     --geglu \
+    --ffn-hidden-size 1152 \
     --layernorm-embedding \
     --load ${checkpoint_path} \
     --save ${checkpoint_path} \
@@ -207,7 +211,10 @@ megatron_options=" \
     --wandb-project med-modern-bert-true \
     --use-flash-attn-v2 \
     --no-position-embedding \
-    --wandb-exp-name merged-10000-10000 \
+    --wandb-exp-name 250909_full_100000-4 \
+    --optimizer stable_adamw \
+    --stable-adamw-kahan-sum \
+    --stable-adamw-decouple-lr \
     --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then
