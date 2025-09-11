@@ -1,6 +1,6 @@
 #!/bin/sh
 #PBS -q regular-g
-#PBS -l select=64
+#PBS -l select=1
 #PBS -W group_list=gd43
 #PBS -o med_100000.out
 #PBS -e med_100000.err
@@ -21,7 +21,7 @@ source ./250/bin/activate
 
 pip install torch-optimi
 
-jobname="250909_full_100000-4"
+jobname="250911_init_check"
 
 dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
@@ -188,7 +188,7 @@ megatron_options=" \
     --eval-interval ${eval_interval} \
     --eval-iters ${eval_iters} \
     --save-interval ${save_interval} \
-    --weight-decay 1e-4 \
+    --weight-decay 1e-5 \
     --clip-grad 1.0 \
     --num-workers ${num_workers} \
     --bf16 \
@@ -211,10 +211,11 @@ megatron_options=" \
     --wandb-project med-modern-bert-true \
     --use-flash-attn-v2 \
     --no-position-embedding \
-    --wandb-exp-name 250909_full_100000-4 \
+    --wandb-exp-name 250911_init_check \
     --optimizer stable_adamw \
     --stable-adamw-kahan-sum \
     --stable-adamw-decouple-lr \
+    --init-method-full-megatron \
     --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then
