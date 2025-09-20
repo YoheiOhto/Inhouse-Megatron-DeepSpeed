@@ -12,7 +12,7 @@ import glob
 # --- パラメータ設定 ---
 # ★★★ ステップ1で取得したご自身のHFトークンをここに設定 ★★★
 # 環境変数から読み込むのがより安全ですが、直接記述しても動作します。
-HF_TOKEN = os.getenv("HF_TOKEN", "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") 
+HF_TOKEN = os.getenv("HF_TOKEN", "") 
 
 OUTPUT_FILE_PATH = "/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4.jsonl"
 NUM_PROCESSES = 64
