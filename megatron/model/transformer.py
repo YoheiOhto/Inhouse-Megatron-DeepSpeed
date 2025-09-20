@@ -22,6 +22,8 @@ from megatron.model.fused_bias_gelu import bias_gelu_impl
 from megatron.model.rotary_pos_embedding import apply_rotary_pos_emb
 from megatron.model.utils import attention_mask_func, openai_gelu, erf_gelu
 from .rotary_pos_embedding import apply_rotary_pos_emb, RotaryEmbedding
+from megatron.model.full_megatron_init import ModuleType
+
 import deepspeed
 from deepspeed.moe.layer import MoE
 from deepspeed.accelerator import get_accelerator
@@ -126,6 +128,7 @@ class ParallelMLP(MegatronModule):
             moe=moe,
             enable_expert_tensor_parallelism=enable_expert_tensor_parallelism
         )
+        self.dense_h_to_4h.type_of_module = ModuleType.in_module
 
         self.bias_gelu_fusion = False
         self.activation_func = None
@@ -165,6 +168,7 @@ class ParallelMLP(MegatronModule):
             moe=moe,
             enable_expert_tensor_parallelism=enable_expert_tensor_parallelism
         )
+        self.dense_4h_to_h.type_of_module = ModuleType.out_module
         
         self.ds_sequence_parallel_fpdt = args.ds_sequence_parallel_fpdt
         if self.ds_sequence_parallel_fpdt:
@@ -606,6 +610,7 @@ class ParallelAttention(MegatronModule):
                 init_method=config.init_method,
                 bias=args.add_bias_linear,
                 gather_output=False)
+            self.query_key_value.type_of_module = ModuleType.in_module
         else:
             assert attention_type == AttnType.cross_attn
             self.query = tensor_parallel.ColumnParallelLinear(
@@ -659,6 +664,7 @@ class ParallelAttention(MegatronModule):
             bias=args.add_bias_linear,
             input_is_parallel=True,
             skip_bias_add=True)
+        self.dense.type_of_module = ModuleType.out_module
 
 
     def _checkpointed_attention_forward(self, query_layer, key_layer,
@@ -741,9 +747,6 @@ class ParallelAttention(MegatronModule):
 
             attention_mask = attention_mask & local_mask.unsqueeze(0).unsqueeze(0)
 
-        # =================================================
-        # Pre-allocate memory for key-values for inference.
-        # =================================================
         is_first_step = False
         if inference_params:
             if self.layer_number not in inference_params.key_value_memory_dict:
@@ -760,9 +763,6 @@ class ParallelAttention(MegatronModule):
                 inference_key_memory, inference_value_memory = \
                     inference_params.key_value_memory_dict[self.layer_number]
 
-        # =====================
-        # Query, Key, and Value
-        # =====================
         if self.attention_type == AttnType.self_attn:
             # Attention heads [sq, b, h] --> [sq, b, ((nq + 2 * nkv) * hn)]
             mixed_x_layer, _ = self.query_key_value(hidden_states)
@@ -819,17 +819,6 @@ class ParallelAttention(MegatronModule):
                  self.hidden_size_per_attention_head)
             query_layer = query_layer.view(*new_tensor_shape)
 
-        # ==================================
-        # Adjust key and value for inference
-        # ==================================
-
-        # duplicate the pos_emb for self attention
-        if rotary_pos_emb is not None:
-            if isinstance(rotary_pos_emb, tuple):
-                rotary_pos_emb = rotary_pos_emb
-            else:
-                rotary_pos_emb = ((rotary_pos_emb,) * 2)
-
         if inference_params:
             batch_start = inference_params.batch_size_offset
             batch_end = batch_start + key_layer.size(1)
@@ -868,10 +857,6 @@ class ParallelAttention(MegatronModule):
                 k_pos_emb = k_pos_emb[:sequence_end, :, :, :]
                 rotary_pos_emb = (q_pos_emb, k_pos_emb)
 
-
-        # ==================================
-        # core attention computation
-        # ==================================
 
         # apply relative positional encoding (rotary embedding)
         if rotary_pos_emb is not None:
@@ -919,10 +904,6 @@ class ParallelAttention(MegatronModule):
                 else:
                     context_layer = self.core_attention(
                         query_layer, key_layer, value_layer, attention_mask)
-
-        # =================
-        # Output. [sq, b, h]
-        # =================
 
         output, bias = self.dense(context_layer)
 

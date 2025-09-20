@@ -6,6 +6,7 @@ from deepspeed.accelerator.real_accelerator import get_accelerator
 if get_accelerator().device_name() == 'xpu':
     import intel_extension_for_pytorch
 if get_accelerator().device_name() == 'cuda':
+    print("Using NVIDIA GPU")
     from .fused_layer_norm import MixedFusedLayerNorm as LayerNorm
     from apex.normalization import MixedFusedRMSNorm as RMSNorm
 else:

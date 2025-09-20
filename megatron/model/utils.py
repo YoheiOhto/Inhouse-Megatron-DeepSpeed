@@ -50,13 +50,15 @@ def attention_mask_func(attention_scores, attention_mask):
 
 def get_linear_layer(rows, columns, init_method, gather_params_on_init=False):
     """Simple linear layer with weight initialization."""
-    layer = torch.nn.Linear(rows, columns)
+    args = get_args()
+    layer = torch.nn.Linear(rows, columns, bias=args.add_bias_linear)
     if get_args().perform_initialization:
         with GatheredParameters(layer.weight, modifier_rank=0, enabled=gather_params_on_init):
             init_method(layer.weight)
-    with torch.no_grad():
-        with GatheredParameters(layer.bias, modifier_rank=0, enabled=gather_params_on_init):
-            layer.bias.zero_()
+    if args.add_bias_linear:
+        with torch.no_grad():
+            with GatheredParameters(layer.bias, modifier_rank=0, enabled=gather_params_on_init):
+                layer.bias.zero_()
     return layer
 
 @torch.jit.script
@@ -66,9 +68,6 @@ def gelu_impl(x):
                                        (1.0 + 0.044715 * x * x)))
 def openai_gelu(x):
     return gelu_impl(x)
-def geglu(x):  # add for modern bert
-    x = torch.chunk(x, 2, dim=-1)
-    return F.gelu(x[0]) * x[1]
 
 #This is actually Python equivalent of torch.nn.functional.gelu(), also with type hints for ONNX exporter
 @torch.jit.script

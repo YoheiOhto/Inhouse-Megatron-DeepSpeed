@@ -18,6 +18,8 @@ from .transformer import ParallelTransformer
 from .utils import get_linear_layer
 from .utils import init_method_normal, scaled_init_method_normal, gather_and_init
 
+from megatron.model.full_megatron_init import ModuleType
+
 
 def parallel_lm_logits(input_, word_embeddings_weight, parallel_output,
                        bias=None):
@@ -158,6 +160,7 @@ class Embedding(MegatronModule):
         self.params_dtype = args.params_dtype
         self.word_embeddings = tensor_parallel.VocabParallelEmbedding(
             vocab_size, self.hidden_size, config=config, init_method=config.init_method)
+        self.word_embeddings.type_of_module = ModuleType.emb
         self._word_embeddings_key = 'word_embeddings'
 
         # Position embedding (serial).

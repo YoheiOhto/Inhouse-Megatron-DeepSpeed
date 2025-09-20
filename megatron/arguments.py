@@ -285,7 +285,7 @@ def validate_args(args, defaults={}):
     # Checks.
     if not args.use_dataset_only:
         if args.ffn_hidden_size is None:
-            if args.swiglu:
+            if args.swiglu or args.geglu:  # add for modern bert
                 # reduce the dimnesion for MLP since projections happens on
                 # two linear layers. this keeps the number of paramters in
                 # the same ballpark as the counterpart with 4*h size
@@ -693,18 +693,6 @@ def _add_network_size_args(parser):
     group.add_argument('--kill-switch-file', type=str, default=None,
                        help='Location of kill switch file. '
                             'If found will automatically exit the program at runtime.')
-    parser.add_argument('--use-switch-attention', action='store_true',
-                        help='Use Switch Attention instead of standard attention.')
-    parser.add_argument('--use-switch-attention-rope', action='store_true',
-                        help='Use Switch Attention instead of standard attention.')
-    parser.add_argument('--global-rope-theta', type=float, default=10000.0,
-                        help='Theta for RoPE in global attention layers.')
-    parser.add_argument('--local-rope-theta', type=float, default=10000.0,
-                        help='Theta for RoPE in local sliding window attention layers.')
-    parser.add_argument('--global-attn-every-n-layers', type=int, default=3,
-                        help='Frequency of global attention layers.')
-    parser.add_argument('--local-window-size', type=int, default=256,
-                        help='Window size for local sliding attention.')
     return parser
 
 
@@ -818,6 +806,18 @@ def _add_regularization_args(parser):
                             'precision in low-precision training (fp16/bf16).')
     group.add_argument('--sgd-momentum', type=float, default=0.9,
                        help='Momentum factor for sgd')
+    parser.add_argument('--use-switch-attention', action='store_true',
+                        help='Use Switch Attention instead of standard attention.')
+    parser.add_argument('--use-switch-attention-rope', action='store_true',
+                        help='Use Switch Attention instead of standard attention.')
+    parser.add_argument('--global-rope-theta', type=float, default=10000.0,
+                        help='Theta for RoPE in global attention layers.')
+    parser.add_argument('--local-rope-theta', type=float, default=10000.0,
+                        help='Theta for RoPE in local sliding window attention layers.')
+    parser.add_argument('--global-attn-every-n-layers', type=int, default=3,
+                        help='Frequency of global attention layers.')
+    parser.add_argument('--local-window-size', type=int, default=128,
+                        help='Window size for local sliding attention.')
 
     return parser
 
@@ -1034,7 +1034,8 @@ def _add_initialization_args(parser):
                        'distribution used for weight initialization.')
     group.add_argument('--init-method-xavier-uniform', action='store_true',
                        help='Enable Xavier uniform parameter initialization')
-
+    group.add_argument('--full-megatron-model-init', action='store_true',
+                        help='Used in modern bert to initialize the full model')
     return parser
 
 

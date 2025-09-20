@@ -1,6 +1,6 @@
 #!/bin/sh
 #PBS -q regular-g
-#PBS -l select=1
+#PBS -l select=64
 #PBS -W group_list=gg17
 #PBS -o med_100000.out
 #PBS -e med_100000.err
@@ -13,16 +13,21 @@ module load cudnn/9.5.1.17
 module load ompi-cuda/4.1.6-12.6
 
 source /work/gg17/a97006/.g_bashrc
+# pyenv install 3.12.4 # This might take time; consider preparing an env beforehand
+# pyenv local 3.12.4
 
 cd ~/env/llm-pyenv-4
 source ./250/bin/activate
 
-jobname="debug-full"
+pip install torch-optimi
+
+jobname="250911_c4_2"
 
 dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
+wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=1
+global_batch_size=5120
 lr=8e-4
 min_lr=1e-5
 
@@ -35,13 +40,13 @@ init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
 # train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
-train_iters=100
+train_iters=62100
 ###############################################################################
 ### lr configs
-lr_warmup_iters=1 # これが lr_warmup_steps に対応
+lr_warmup_iters=20700 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 # lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
-lr_decay_iters=100 # これが lr_decay_steps に対応
+lr_decay_iters=41400 # これが lr_decay_steps に対応
 lr_decay_style="constant"
 ####################################################
 ### Parallelism configs
@@ -91,12 +96,13 @@ if [ ${batch_size} -eq 0 ]; then
     echo "Warning: Calculated micro batch size is 0. Setting to 1. Check global_batch_size and dp_size."
     batch_size=1
 fi
+batch_size=20
 ###############################################################################
 ### Misc configs
 log_interval=1000
 eval_iters=1
 eval_interval=1000
-num_save=1
+num_save=3
 save_interval=$((${train_iters} / ${num_save}))
 activation_checkpoint="false"
 log_optimizer_state="true"
@@ -121,7 +127,7 @@ data_path="${weight_pubmed} ${pubmed_path} \
            ${weight_pmc} ${pmc_path} \
            ${weight_fda_label} ${fda_label_path} \
            ${weight_nih_books} ${nih_books_path}"
-data_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/4_merged/all_merged_100000-1024/4_merged_text_sentence"
+data_path="/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4_text_sentence"
 vocab_path="/work/gg17/a97006/250519_modern_bert_0/tokenizer/vocab_100000.txt"
 
 num_workers=4
@@ -157,7 +163,6 @@ data_options=" \
 megatron_options=" \
     --bert-no-binary-head \
     --dataloader-type cyclic \
-    --disable-bias-linear \
     --override-opt_param-scheduler \
     --adam-beta1 0.9 \
     --adam-beta2 0.98 \
@@ -183,10 +188,11 @@ megatron_options=" \
     --eval-iters ${eval_iters} \
     --save-interval ${save_interval} \
     --weight-decay 1e-5 \
-    --clip-grad 1.0 \
+    --clip-grad 0 \
     --num-workers ${num_workers} \
     --bf16 \
-    --geglu \
+    --swiglu \
+    --ffn-hidden-size 1152 \
     --layernorm-embedding \
     --load ${checkpoint_path} \
     --save ${checkpoint_path} \
@@ -195,19 +201,11 @@ megatron_options=" \
     --log-batch-size-to-tensorboard \
     --log-validation-ppl-to-tensorboard \
     --tensorboard-dir ${tensorboard_path} \
-    --use-switch-attention \
-    --use-switch-attention-rope \
-    --global-rope-theta 10000 \
-    --local-rope-theta 10000 \
-    --global-attn-every-n-layers 3 \
-    --local-window-size 128 \
     --wandb-project med-modern-bert-true \
     --use-flash-attn-v2 \
-    --no-position-embedding \
-    --wandb-exp-name debug-full \
-    --full-megatron-model-init \
-    --stable-adamw-decouple-lr \
+    --wandb-exp-name 250911_c4_not_modern \
     --optimizer stable_adamw \
+    --stable-adamw-decouple-lr \
     --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then

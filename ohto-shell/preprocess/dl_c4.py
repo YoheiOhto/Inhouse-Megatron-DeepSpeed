@@ -1,68 +1,88 @@
 import os
-import argparse
-import json
-from datasets import load_dataset
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import gzip
+import io
 from tqdm import tqdm
+import multiprocessing as mp
+import shutil
+import glob
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Download a subset of the C4 dataset and save it as a JSONL file."
-    )
-    parser.add_argument(
-        "--save_dir",
-        type=str,
-        required=True,
-        help="The directory where the downloaded JSONL file will be saved."
-    )
-    # 保存するレコード数を引数で指定できるようにする（オプション）
-    parser.add_argument(
-        "--num_records",
-        type=int,
-        default=10_000_000, # デフォルトを1000万件に設定
-        help="Number of records to download from the dataset."
-    )
-    args = parser.parse_args()
+# --- パラメータ設定 ---
+# ★★★ ステップ1で取得したご自身のHFトークンをここに設定 ★★★
+# 環境変数から読み込むのがより安全ですが、直接記述しても動作します。
+HF_TOKEN = os.getenv("HF_TOKEN", "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") 
 
-    save_dir = args.save_dir
-    os.makedirs(save_dir, exist_ok=True)
-    filepath = os.path.join(save_dir, "c4.jsonl")
+OUTPUT_FILE_PATH = "/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/dataset/c4/c4.jsonl"
+NUM_PROCESSES = 64
+BASE_URL = "https://huggingface.co/datasets/allenai/c4/resolve/main/en/c4-train.{i:05d}-of-01024.json.gz"
+NUM_FILES = 1024
+TMP_DIR = "./c4_tmp"
+# --------------------
+
+def create_retry_session():
+    """
+    リトライ機能を持つrequests.Sessionオブジェクトを作成する関数
+    """
+    session = requests.Session()
+    # ★★★ リトライ戦略の定義 ★★★
+    retry_strategy = Retry(
+        total=5,  # 合計5回までリトライ
+        backoff_factor=5,  # 待機時間（秒）: {backoff factor} * (2 ** ({number of total retries} - 1))
+                           # 例: 0s, 2s, 4s, 8s, 16s
+        status_forcelist=[429, 500, 502, 503, 504],  # これらのステータスコードでリトライ
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
+
+def download_and_write_to_temp(file_index):
+    file_url = BASE_URL.format(i=file_index)
+    output_filename = os.path.join(TMP_DIR, f"part-{file_index:05d}.jsonl")
     
-    num_to_save = args.num_records
-
-    print(f"C4データセットの先頭{num_to_save:,}件のダウンロードと変換を開始します...")
-    print(f"保存先ファイル: {filepath}")
-
+    session = create_retry_session()
+    headers = {"Authorization": f"Bearer {HF_TOKEN}"} if HF_TOKEN else {}
+    
     try:
-        dataset_stream = load_dataset("allenai/c4", "en", split="train", streaming=True)
+        # ★★★ session.getを使い、認証ヘッダーを追加 ★★★
+        with session.get(file_url, stream=True, timeout=60, headers=headers) as r, open(output_filename, "w", encoding="utf-8") as f_out:
+            r.raise_for_status()
+            fobj = io.TextIOWrapper(gzip.GzipFile(fileobj=r.raw), encoding='utf-8')
+            for line in fobj:
+                f_out.write(line)
+        return file_index
+    except requests.exceptions.RequestException as e:
+        print(f"ファイル {file_index} のダウンロードに失敗しました（リトライ上限到達）: {e}")
+        return None
 
-        # .take() メソッドで、データセットの先頭から指定した件数だけを取り出す
-        limited_stream = dataset_stream.take(num_to_save)
+# main関数は前回の「解決策2」のままでOK
+def main():
+    os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+    os.makedirs(TMP_DIR, exist_ok=True)
 
-        with open(filepath, "w", encoding="utf-8") as f:
-            # total を指定することで、プログレスバーの全体量がわかるようになる
-            progress_bar = tqdm(limited_stream, total=num_to_save, desc=f"Writing to {filepath}")
-            
-            for example in progress_bar:
-                json_line = json.dumps(example, ensure_ascii=False)
-                f.write(json_line + '\n')
+    with mp.Pool(processes=NUM_PROCESSES) as pool:
+        with tqdm(total=NUM_FILES, desc="Downloading parts") as pbar:
+            for result in pool.imap_unordered(download_and_write_to_temp, range(NUM_FILES)):
+                if result is not None:
+                    pbar.update(1)
 
-    except Exception as e:
-        print(f"\nエラーが発生しました: {e}")
-        if os.path.exists(filepath):
-            print(f"不完全なファイル {filepath} を削除します。")
-            os.remove(filepath)
-        exit(1)
+    print("\nすべてのパーツのダウンロードが完了しました。ファイルを結合します...")
+    
+    # 正常にダウンロードできたファイルのみを結合対象とする
+    temp_files = sorted(glob.glob(os.path.join(TMP_DIR, "*.jsonl")))
+    print(f"{len(temp_files)} / {NUM_FILES} 個のファイルを結合します。")
 
-    print(f"\n'{filepath}' の保存が完了しました。 ({num_to_save:,}件)")
-    print("\nすべての処理が完了しました。")
+    with open(OUTPUT_FILE_PATH, "wb") as f_out:
+        for temp_file in tqdm(temp_files, desc="Merging files"):
+            with open(temp_file, "rb") as f_in:
+                shutil.copyfileobj(f_in, f_out)
+    
+    print("一時ファイルを削除します...")
+    shutil.rmtree(TMP_DIR)
 
+    print(f"\n処理が完了しました。データセットが {OUTPUT_FILE_PATH} に保存されました。")
 
-if __name__ == "__main__":
-    try:
-        from tqdm import tqdm
-    except ImportError:
-        def tqdm(iterator, *args, **kwargs):
-            print("tqdmライブラリがありません。'pip install tqdm' で進捗バーを表示できます。")
-            return iterator
-
+if __name__ == '__main__':
     main()

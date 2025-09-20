@@ -16,6 +16,7 @@ from megatron.model.utils import init_method_normal
 from megatron.model.utils import scaled_init_method_normal
 from .module import MegatronModule
 
+from megatron.model.full_megatron_init import apply_full_megatron_init, ModuleType
 
 def bert_extended_attention_mask(attention_mask):
     attention_mask_b1s = attention_mask.unsqueeze(1)
@@ -46,7 +47,7 @@ class BertLMHead(MegatronModule):
 
         self.dense = get_linear_layer(hidden_size, hidden_size, config.init_method, gather_params_on_init=args.zero_stage == 3)
         setattr(self.dense.weight, 'sequence_parallel', config.sequence_parallel)
-        setattr(self.dense.bias, 'sequence_parallel', config.sequence_parallel)
+        # setattr(self.dense.bias, 'sequence_parallel', config.sequence_parallel)
 
         self.layernorm = LayerNorm(hidden_size,
                                    eps=config.layernorm_epsilon,
@@ -141,6 +142,7 @@ class BertModel(MegatronModule):
         if self.post_process:
             self.lm_head = BertLMHead(self.shared_embedding_or_output_weight().size(0), config.hidden_size,
                                       config, parallel_output)
+            self.lm_head.type_of_module = ModuleType.final_out
             self._lm_head_key = 'lm_head'
             self.binary_head = None
             if self.add_binary_head:
@@ -148,6 +150,10 @@ class BertModel(MegatronModule):
                                                     config.init_method,
                                                     args.zero_stage == 3)
                 self._binary_head_key = 'binary_head'
+        
+        if args.full_megatron_model_init:
+            print("Applying ModernBERT's 'full_megatron_init' to the entire model...")
+            apply_full_megatron_init(self, config)
 
     def set_input_tensor(self, input_tensor):
         """See megatron.model.transformer.set_input_tensor()"""

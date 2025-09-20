@@ -69,6 +69,7 @@ class MixedFusedLayerNorm(torch.nn.Module):
                                               device=init_device,
                                               dtype=get_args().params_dtype))
         else:
+            print("WARNING: FusedLayerNorm is created without bias parameter.")
             self.register_buffer('bias', torch.zeros(*normalized_shape,
                                                      device=init_device,
                                                      dtype=get_args().params_dtype))

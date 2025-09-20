@@ -127,7 +127,8 @@ def get_megatron_optimizer(model,
                                     decouple_lr=args.stable_adamw_decouple_lr,
                                     max_lr=args.lr if args.stable_adamw_decouple_lr else None,
                                     kahan_sum=args.stable_adamw_kahan_sum,
-                                    triton=False
+                                    triton=False,
+                                    foreach=True
                                     )
         else:
             raise Exception('{} optimizer is not supported.'.format(

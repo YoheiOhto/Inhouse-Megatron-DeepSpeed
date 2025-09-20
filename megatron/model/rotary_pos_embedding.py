@@ -13,10 +13,6 @@ from deepspeed.accelerator import get_accelerator
 
 __all__ = ['RotaryEmbedding', 'apply_rotary_pos_emb']
 
-# sin, cos tensors cached for all devices
-cos_cached = None
-sin_cached = None
-
 class RotaryEmbedding(nn.Module):
     def __init__(self, dim, theta=10000):
         super().__init__()
@@ -62,11 +58,9 @@ def apply_rotary_pos_emb(t, freqs):
         # ideally t_pass is empty so rotary pos embedding is applied to all tensor t
         t, t_pass = t[..., :rot_dim], t[..., rot_dim:]
 
-    global cos_cached, sin_cached
-    if cos_cached is None or sin_cached is None or t.shape[0] != cos_cached.shape[0]:
-        freqs_ = freqs[:t.shape[0]]
-        cos_cached = freqs_.cos().to(t.dtype)
-        sin_cached = freqs_.sin().to(t.dtype)
+    freqs_ = freqs[:t.shape[0]]
+    cos_cached = freqs_.cos().to(t.dtype)
+    sin_cached = freqs_.sin().to(t.dtype)
     # first part is cosine component
     # second part is sine component, need to change signs with _rotate_half method
     t = (t * cos_cached) + (_rotate_half(t) * sin_cached)
