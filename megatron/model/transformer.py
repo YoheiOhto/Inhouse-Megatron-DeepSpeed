@@ -1544,7 +1544,8 @@ class ParallelTransformerLayer(MegatronModule):
                 retriever_attn_mask=None,
                 inference_params=None,
                 rotary_pos_emb=None,
-                aggregated_moe_loss=None):
+                aggregated_moe_loss=None,
+                input_ids=None):
         # hidden_states: [s, b, h]
         if self.skip_input_layernorm:
             print("Skipping input layernorm for layer %d" % self.layer_number)
@@ -1561,14 +1562,14 @@ class ParallelTransformerLayer(MegatronModule):
                     attention_mask,
                     inference_params=inference_params,
                     rotary_pos_emb=rotary_pos_emb,
-                    cpu_offloading=self.ds_sequence_parallel_fpdt_offloading)
+                    cpu_offloading=self.ds_sequence_parallel_fpdt_offloading, input_ids=input_ids)
         except TypeError:
             attention_output, attention_bias = \
                 self.self_attention(
                     layernorm_output,
                     attention_mask,
                     inference_params=inference_params,
-                    rotary_pos_emb=rotary_pos_emb)
+                    rotary_pos_emb=rotary_pos_emb, input_ids=input_ids)
             
         # Residual connection.
         if self.apply_residual_connection_post_layernorm:
@@ -2111,7 +2112,7 @@ class ParallelTransformer(MegatronModule):
 
     def _checkpointed_forward(self, hidden_states, attention_mask,
                               encoder_output, enc_dec_attn_mask,
-                              rotary_pos_emb, is_first_microbatch):
+                              rotary_pos_emb, is_first_microbatch, input_ids=None):
         args = get_args()
 
         """Forward method with activation checkpointing."""
@@ -2121,7 +2122,7 @@ class ParallelTransformer(MegatronModule):
                 moe_losses = []
                 for index in range(start, end):
                     layer = self._get_layer(index)
-                    output = layer(x_, *args, **kwargs)
+                    output = layer(x_, *args, **kwargs, input_ids=input_ids)
                     if isinstance(output, tuple):
                         x_, moe_loss = output
                     else:
@@ -2229,7 +2230,7 @@ class ParallelTransformer(MegatronModule):
                 retriever_output=None,
                 retriever_attn_mask=None,
                 inference_params=None,
-                rotary_pos_emb=None):
+                rotary_pos_emb=None, input_ids=None):
         # hidden_states: [s, b, h]
 
         # Checks.
@@ -2237,43 +2238,10 @@ class ParallelTransformer(MegatronModule):
             assert self.recompute_granularity is None, \
                 'inference does not work with activation checkpointing'
 
-        # TODO: Below old DeepSpeed code are commented because it's unsure whether
-        # it is still relevant.
-        # # Reza's note: DeepSpeed inference does not support transposes
-        # if not self.ds_inference:
-        #     if self.pre_process:
-        #         # Data format change to avoid explicit tranposes : [b s h] --> [s b h].
-        #         # If the input flag for fp32 residual connection is set, convert for float.
-        #         if self.fp32_residual_connection:
-        #             hidden_states = hidden_states.transpose(0, 1).contiguous().float()
-        #         # Otherwise, leave it as is.
-        #         else:
-        #             hidden_states = hidden_states.transpose(0, 1).contiguous()
-        #     else:
-        #         # See set_input_tensor()
-        #         hidden_states = self.input_tensor
-        #     if encoder_output is not None:
-        #          encoder_output = encoder_output.transpose(0, 1).contiguous()
-
         if not self.pre_process:
             # See set_input_tensor()
             hidden_states = self.input_tensor
 
-        # Viewless tensor.
-        # - We only need to create a viewless tensor in the case of micro batch
-        #   size (mbs) == 1, since in this case, 'hidden_states.transpose()'
-        #   above creates a view tensor, and '.contiguous()' is a pass-through.
-        #   For mbs >= 2, '.contiguous()' creates a new tensor, eliminating
-        #   the need to make it viewless.
-        #
-        #   However, we don't explicitly check mbs == 1 here because
-        #   make_viewless_tensor() has negligible overhead when its input
-        #   is already viewless.
-        #
-        # - For the 'else' case above, calling make_viewless_tensor() here is
-        #   likely redundant, since p2p_communication.py (likely originator)
-        #   already creates viewless tensors. That said, make_viewless_tensor()
-        #   is called here to be future-proof and corner-case-proof.
         hidden_states = core.utils.make_viewless_tensor(
             hidden_states,
             requires_grad=True,
@@ -2309,19 +2277,20 @@ class ParallelTransformer(MegatronModule):
                                                                encoder_output,
                                                                enc_dec_attn_mask,
                                                                rotary_pos_emb,
-                                                               is_first_microbatch)
+                                                               is_first_microbatch, input_ids=input_ids)
                 elif self.recompute_granularity == 'full':
                     hidden_states, moe_losses = self._checkpointed_forward(hidden_states,
                                                                attention_mask,
                                                                encoder_output,
                                                                enc_dec_attn_mask,
                                                                rotary_pos_emb,
-                                                               is_first_microbatch)
+                                                               is_first_microbatch, input_ids=input_ids)
                 else:
                     forward_kwargs = {
                         'encoder_output': encoder_output,
                         'enc_dec_attn_mask': enc_dec_attn_mask,
                         'inference_params': inference_params,
+                        'input_ids': input_ids
                     }
 
                     if self.transformer_impl == 'transformer_engine':
