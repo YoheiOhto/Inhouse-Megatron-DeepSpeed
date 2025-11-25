@@ -16,7 +16,7 @@ from deepspeed.accelerator import get_accelerator
 from deepspeed.moe.layer import MoE
 from deepspeed.sequence.fpdt_layer import FPDT_FFN, FPDT_Attention
 from megatron import (core, get_args, get_num_microbatches, get_retro_args,
-                      get_timers, print_rank_0)
+                      get_timers)
 from megatron.core import mpu, parallel_state, tensor_parallel
 from megatron.core.enums import ModelType
 from megatron.model import LayerNorm, RMSNorm
@@ -43,6 +43,10 @@ try:
     from einops import rearrange
 except ImportError:
     rearrange = None
+
+def print_rank_0(message):
+    if not torch.distributed.is_initialized() or torch.distributed.get_rank() == 0:
+        print(message, flush=True)
 
 # =============================================================================
 # FlashAttention Imports (Legacy Support + ModernBERT FA3/FA2 Priority)
@@ -115,7 +119,6 @@ try:
     flash_attn_builder = FlashAttentionBuilder().load()
 except (TypeError, ImportError, RuntimeError):
     flash_attn_builder = None
-
 
 """ We use the following notation throughout this file:
      h: hidden size
@@ -802,6 +805,37 @@ class ParallelAttention(MegatronModule):
 
         return query_layer, key_layer, value_layer
 
+    def _split_qkv_unpadded(self, mixed_x_layer):
+        n_kv_local = self.num_key_value_heads_per_partition
+        group_size = self.num_key_value_groups
+        head_dim = self.hidden_size_per_attention_head
+        
+        new_shape = mixed_x_layer.shape[:-1] + (n_kv_local, group_size + 2, head_dim)
+        mixed_x_layer = mixed_x_layer.view(*new_shape)
+        
+        query_layer, key_layer, value_layer = torch.split(
+            mixed_x_layer, [group_size, 1, 1], dim=2
+        )
+        
+        query_layer = query_layer.reshape(
+            query_layer.shape[0], 
+            n_kv_local * group_size, 
+            head_dim
+        )
+        
+        key_layer = key_layer.reshape(
+            key_layer.shape[0], 
+            n_kv_local, 
+            head_dim
+        )
+        value_layer = value_layer.reshape(
+            value_layer.shape[0], 
+            n_kv_local, 
+            head_dim
+        )
+        
+        return query_layer, key_layer, value_layer
+
     def forward(self, hidden_states, attention_mask,
                 encoder_output=None, inference_params=None,
                 rotary_pos_emb=None):
@@ -822,6 +856,7 @@ class ParallelAttention(MegatronModule):
         )
 
         if use_unpadding:
+            print("use_unpadding is True in Layer")
             if attention_mask.dim() == 4:
                 # Megatron [B, 1, 1, S] -> [B, S]
                 mask_for_unpad = attention_mask[:, 0, 0, :]

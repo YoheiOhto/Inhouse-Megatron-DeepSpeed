@@ -1,7 +1,7 @@
 #!/bin/sh
 #PBS -q regular-g
-#PBS -l select=1
-#PBS -l walltime=00:20:00
+#PBS -l select=2
+#PBS -l walltime=00:30:00
 #PBS -W group_list=ga97
 #PBS -o check_param.out
 #PBS -e check_param.err
@@ -16,14 +16,10 @@ module load ompi-cuda/4.1.6-12.6
 source /work/gg17/a97006/.g_bashrc
 pyenv local 3.12.4
 
-cd ~/env/llm-pyenv-4
+cd ~/env/llm-pyenv-6
 source ./250/bin/activate
 
-mkdir ./packages
-curl -L https://static.abacus.ai/pypi/abacusai/gh200-llm/pytorch-2412-cuda126/flash_attn-2.7.2.post1-cp312-cp312-linux_aarch64.whl -o ./packages/flash_attn-2.7.2.post1-cp312-cp312-linux_aarch64.whl
-pip install --root-user-action=ignore --no-deps --no-index --find-links ./packages flash-attn
-
-jobname="251120-updated"
+jobname="251125-flashattn-test"
 
 dir='/work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
@@ -135,11 +131,8 @@ if [[ "$host" == *"webxt"* ]]; then
 fi
 log_path="${output_home}/log/"
 checkpoint_path="${output_home}/checkpoint/${jobname}"
-tensorboard_dir="/work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/${username}/project/bert_with_pile/tensorboard/"
-tensorboard_path="${tensorboard_dir}${jobname}_${host}_${current_time}" # host here refers to the master job submission host
 mkdir -p ${log_path}
 mkdir -p ${checkpoint_path}
-mkdir -p ${tensorboard_path}
 ###############################################################################
 data_options=" \
     --vocab-file ${vocab_path} \
@@ -183,11 +176,6 @@ megatron_options=" \
     --layernorm-embedding \
     --load ${checkpoint_path} \
     --save ${checkpoint_path} \
-    --tensorboard-queue-size 1 \
-    --log-timers-to-tensorboard \
-    --log-batch-size-to-tensorboard \
-    --log-validation-ppl-to-tensorboard \
-    --tensorboard-dir ${tensorboard_path} \
     --use-switch-attention \
     --use-switch-attention-rope \
     --global-rope-theta 10000 \
@@ -202,17 +190,12 @@ megatron_options=" \
     --stable-adamw-decouple-lr \
     --full-megatron-model-init \
     --wandb-project check_param \
-    --wandb-exp-name 251017-1 \
+    --wandb-exp-name ${jobname} \
     --wandb-save-dir /work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then
 megatron_options="${megatron_options} \
     --checkpoint-activations"
-fi
-
-if [ "${log_optimizer_state}" = "true" ]; then
-megatron_options="${megatron_options} \
-    --log-optimizer-states-to-tensorboard"
 fi
 
 template_json="/work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/examples_deepspeed/bert_with_pile/ds_config_bert_TEMPLATE.json"
