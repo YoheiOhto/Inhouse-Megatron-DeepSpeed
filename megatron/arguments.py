@@ -576,7 +576,7 @@ def _add_retro_args(parser):
                        help='Number of layers to use for the retrieval '
                        'encoder.')
     group.add_argument('--retro-encoder-hidden-dropout',
-                       type=float, default=0.1, help='Hidden dropout for '
+                       type=float, default=0.0, help='Hidden dropout for '
                        'retrieval encoder.')
     group.add_argument('--retro-encoder-attention-dropout',
                        type=float, default=0.1, help='Attention dropout for '
@@ -776,7 +776,7 @@ def _add_regularization_args(parser):
 
     group.add_argument('--attention-dropout', type=float, default=0.1,
                        help='Post attention dropout probability.')
-    group.add_argument('--hidden-dropout', type=float, default=0.1,
+    group.add_argument('--hidden-dropout', type=float, default=0.0,
                        help='Dropout probability for hidden state transformer.')
     group.add_argument('--weight-decay', type=float, default=0.01,
                        help='Weight decay coefficient for L2 regularization.')

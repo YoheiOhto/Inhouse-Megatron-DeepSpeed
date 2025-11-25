@@ -2,21 +2,25 @@
 
 """BERT model."""
 
+import math
+
 import torch
+import torch.nn.init as init
 
 from megatron import get_args
 from megatron.core import tensor_parallel
-from megatron.model.enums import AttnMaskType
-from megatron.model.language_model import parallel_lm_logits
-from megatron.model.language_model import get_language_model
 from megatron.model import LayerNorm
-from megatron.model.utils import openai_gelu, erf_gelu
-from megatron.model.utils import get_linear_layer
-from megatron.model.utils import init_method_normal
-from megatron.model.utils import scaled_init_method_normal
+from megatron.model.enums import AttnMaskType
+from megatron.model.full_megatron_init import (ModuleType,
+                                               apply_full_megatron_init)
+from megatron.model.language_model import (get_language_model,
+                                           parallel_lm_logits)
+from megatron.model.utils import (erf_gelu, get_linear_layer,
+                                  init_method_normal, openai_gelu,
+                                  scaled_init_method_normal)
+
 from .module import MegatronModule
 
-from megatron.model.full_megatron_init import apply_full_megatron_init, ModuleType
 
 def bert_extended_attention_mask(attention_mask):
     attention_mask_b1s = attention_mask.unsqueeze(1)
@@ -35,13 +39,18 @@ def bert_position_ids(token_ids):
 
     return position_ids
 
-
 class BertLMHead(MegatronModule):
     def __init__(self, mpu_vocab_size, hidden_size, config, parallel_output):
         super().__init__(config=config)
 
         args = get_args()
-        self.bias = torch.nn.Parameter(torch.zeros(mpu_vocab_size))
+
+        fan_in = hidden_size
+        bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
+        bias_tensor = torch.empty(mpu_vocab_size)
+        init.uniform_(bias_tensor, -bound, bound)
+        self.bias = torch.nn.Parameter(bias_tensor)
+
         tensor_parallel.set_tensor_model_parallel_attributes(self.bias, True, 0, 1)
         self.parallel_output = parallel_output
 
@@ -114,7 +123,6 @@ class BertModel(MegatronModule):
         super().__init__(config=config)
         args = get_args()
 
-        # TODO this option is not yet implemented in BERT
         assert args.untie_embeddings_and_output_weights is False
 
         self.fp16_lm_cross_entropy = args.fp16_lm_cross_entropy

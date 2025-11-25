@@ -2,8 +2,8 @@
 #PBS -q regular-c
 #PBS -l select=1
 #PBS -W group_list=gg17
-#PBS -o preprocess_merged.out
-#PBS -e preprocess_merged.err
+#PBS -o preprocess_merged-15.out
+#PBS -e preprocess_merged-15.err
 
 module purge
 module load cmake
@@ -17,49 +17,24 @@ wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e
 
 set -e
 
-# --- 基本設定 ---
-BASE_DIR="/work/gg17/a97006/250519_modern_bert_0"
+BASE_DIR="/work/gg17/a97006/0-250519_modern_bert_0"
 SCRIPT_PATH="${BASE_DIR}/Inhouse-Megatron-DeepSpeed/tools/preprocess_data_sw.py"
-VOCAB_FILE="${BASE_DIR}/tokenizer/vocab_150000.txt"
+VOCAB_FILE="${BASE_DIR}/251004_tokenizer/vocab_150000.txt"
 TOKENIZER_TYPE="BertWordPieceCase"
-WORKERS=12
+WORKERS=20
 WANDB_PROJECT="med_preprocess"
-DATE_TAG="250708"
+DATE_TAG="251005_preprocess-15"
 
-# --- ステップ1：データソースの結合 ---
 echo "=================================================="
-echo "Step 1: Merging source JSONL files..."
-echo "=================================================="
-
-# 入力ファイルパス
-PUBMED_JSON="${BASE_DIR}/json/pubmed.jsonl"
-NIH_JSON="${BASE_DIR}/json/nih_books.jsonl"
-FDA_JSON="${BASE_DIR}/json/fda_label.jsonl"
-PMC_JSON="${BASE_DIR}/json/pmc.jsonl"
-
-# 出力ファイルパス
-MERGED_JSON_DIR="${BASE_DIR}/json"
-mkdir -p "${MERGED_JSON_DIR}"
-MERGED_JSON_FILE="${MERGED_JSON_DIR}/4_merged_data.jsonl"
-
-# catコマンドでファイルを結合（PMCを含める場合は ${PMC_JSON} を追加）
-# cat "${PUBMED_JSON}" "${NIH_JSON}" "${FDA_JSON}" "${PMC_JSON}" > "${MERGED_JSON_FILE}"
-
-echo "Finished merging files into: ${MERGED_JSON_FILE}"
-echo ""
-
-
-# --- ステップ2：結合したファイルの前処理 ---
-echo "=================================================="
-echo "Step 2: Preprocessing the merged file..."
+echo "Step 1: Preprocessing the merged file..."
 echo "=================================================="
 
-# 前処理後の出力先
-OUTPUT_PREFIX_DIR="${BASE_DIR}/preprocessed/4_merged/all_merged_150000-1024"
+OUTPUT_PREFIX_DIR="${BASE_DIR}/251004_preprocessed/4_merged/all_merged_150000-1024"
 mkdir -p "${OUTPUT_PREFIX_DIR}"
 OUTPUT_PREFIX="${OUTPUT_PREFIX_DIR}/4_merged"
-WANDB_NAME="${DATE_TAG}-miyabi-4_merged-150000-1024"
+WANDB_NAME="${DATE_TAG}"
 
+MERGED_JSON_FILE="/work/gg17/a97006/0-250519_modern_bert_0/251001_json/251003_merged.jsonl"
 
 python "${SCRIPT_PATH}" \
     --input "${MERGED_JSON_FILE}" \

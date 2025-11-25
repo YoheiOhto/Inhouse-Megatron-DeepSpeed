@@ -85,7 +85,18 @@ class Encoder(object):
         return json.dumps(output), len(json_line)
 
     def encode(self, json_line):
-        data = json.loads(json_line)
+        try:
+            # パースする前に、行の前後の空白や改行を削除
+            line = json_line.strip()
+            if not line:
+                # 空行の場合はNoneを返してスキップ
+                return None, None, len(json_line)
+            data = json.loads(line)
+        except json.JSONDecodeError:
+            # JSONとしてパースできない行は警告を出してスキップ
+            print(f"Skipping invalid JSON line: {json_line.strip()}", file=sys.stderr)
+            return None, None, len(json_line)
+
         ids = {}
         lens = {} 
 
@@ -215,10 +226,10 @@ class Partition(object):
 
         for i, (doc, sentence_lens, bytes_processed) in enumerate(encoded_docs, start=1):
             total_bytes_processed += bytes_processed
-            for key in doc.keys():
-                # 元のadd_docを呼び出す
-                if doc[key]:
-                    builders[key].add_doc(doc[key], sentence_lens[key])
+            if doc is not None:
+                for key in doc.keys():
+                    if doc[key]:
+                        builders[key].add_doc(doc[key], sentence_lens[key])
             self.print_processing_stats(i, proc_start, total_bytes_processed)
         
         fin.close()

@@ -1,6 +1,6 @@
 #!/bin/sh
 #PBS -q regular-g
-#PBS -l select=2
+#PBS -l select=64
 #PBS -W group_list=gg17
 #PBS -o med_50000.out
 #PBS -e med_50000.err
@@ -13,22 +13,20 @@ module load cudnn/9.5.1.17
 module load ompi-cuda/4.1.6-12.6
 
 source /work/gg17/a97006/.g_bashrc
-pyenv install 3.12.4 # This might take time; consider preparing an env beforehand
 pyenv local 3.12.4
 
-cd ~/env/llm-pyenv-3
+cd ~/env/llm-pyenv-4
 source ./250/bin/activate
 
-jobname="250806-completed-zero2-2"
+jobname="med-bert-full-50000-all-merged"
 
 dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-# global_batch_size=1024
-global_batch_size=48
-lr=5e-4
-min_lr=1e-6
+global_batch_size=2560
+lr=8e-4
+min_lr=1e-5
 
 ## BERT 110M (same config as original BERT-Base model)
 model_size=0.149
@@ -39,20 +37,20 @@ init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
 # train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
-train_iters=32500
+train_iters=130900
 ###############################################################################
 ### lr configs
-lr_warmup_iters=2500 # これが lr_warmup_steps に対応
+lr_warmup_iters=10000 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 # lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
-lr_decay_iters=32500 # これが lr_decay_steps に対応
-lr_decay_style="constant"
+lr_decay_iters=130900 # これが lr_decay_steps に対応
+lr_decay_style="linear"
 ####################################################
 ### Parallelism configs
 mp_size=1
 pp_size=1
 no_pp="true"
-zero_stage=2
+zero_stage=0
 
 ### GPU and Node calculation
 # Get unique node names from PBS_NODEFILE
@@ -91,16 +89,16 @@ if [ ${dp_size} -eq 0 ]; then
     exit 1
 fi
 batch_size=$(( ${global_batch_size} / ${dp_size} ))
-batch_size=24
 if [ ${batch_size} -eq 0 ]; then
     echo "Warning: Calculated micro batch size is 0. Setting to 1. Check global_batch_size and dp_size."
     batch_size=1
 fi
+batch_size=20
 ###############################################################################
 ### Misc configs
-log_interval=1000
+log_interval=20000
 eval_iters=1
-eval_interval=1000
+eval_interval=20000
 num_save=30
 save_interval=$((${train_iters} / ${num_save}))
 activation_checkpoint="false"
@@ -110,28 +108,9 @@ log_optimizer_state="true"
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 host="${HOSTNAME}" # This will be the hostname of the node running this script (master PBS job)
 
-# BLEND DATASET
-pubmed_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pubmed/pubmed_50000-1024/pubmed_text_sentence"
-pmc_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pmc/pubmed_50000-1024/pmc_text_sentence"
-fda_label_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/fda_label/pubmed_50000-1024/fda_label_text_sentence"
-nih_books_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/nih_books/pubmed_50000-1024/nih_books_text_sentence"
-
-weight_pubmed=0.17226
-weight_pmc=0.77645
-weight_fda_label=0.03757
-weight_nih_books=0.01372
-
-weight_pubmed=0.1782
-weight_pmc=0.7850
-weight_fda_label=0.0284
-weight_nih_books=0.0083
 # Combine the datasets into a single data path
-data_path="${weight_pubmed} ${pubmed_path} \
-           ${weight_pmc} ${pmc_path} \
-           ${weight_fda_label} ${fda_label_path} \
-           ${weight_nih_books} ${nih_books_path}"
-data_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/4_merged/all_merged_50000-1024/4_merged_text_sentence"
-vocab_path="/work/gg17/a97006/250519_modern_bert_0/tokenizer/vocab_50000.txt"
+data_path="/work/gg17/a97006/0-250519_modern_bert_0/251004_preprocessed/4_merged/all_merged_50000-1024/4_merged_text_sentence"
+vocab_path="/work/gg17/a97006/0-250519_modern_bert_0/251004_tokenizer/vocab_50000.txt"
 
 num_workers=4
 
@@ -165,10 +144,11 @@ data_options=" \
 
 megatron_options=" \
     --bert-no-binary-head \
+    --dataloader-type cyclic \
     --disable-bias-linear \
     --override-opt_param-scheduler \
     --adam-beta1 0.9 \
-    --adam-beta2 0.999 \
+    --adam-beta2 0.98 \
     --init-method-std ${init_std} \
     --tensor-model-parallel-size ${mp_size} \
     --lr-decay-iters ${lr_decay_iters} \
@@ -190,10 +170,10 @@ megatron_options=" \
     --eval-interval ${eval_interval} \
     --eval-iters ${eval_iters} \
     --save-interval ${save_interval} \
-    --weight-decay 1e-5 \
+    --weight-decay 1e-4 \
     --clip-grad 1.0 \
     --num-workers ${num_workers} \
-    --fp16 \
+    --bf16 \
     --geglu \
     --layernorm-embedding \
     --load ${checkpoint_path} \
@@ -205,14 +185,19 @@ megatron_options=" \
     --tensorboard-dir ${tensorboard_path} \
     --use-switch-attention \
     --use-switch-attention-rope \
-    --global-rope-theta 160000 \
+    --global-rope-theta 10000 \
     --local-rope-theta 10000 \
     --global-attn-every-n-layers 3 \
+    --ffn-hidden-size 1152 \
     --local-window-size 128 \
-    --wandb-project med-modern-bert-true \
     --use-flash-attn-v2 \
     --no-position-embedding \
-    --wandb-exp-name 250814-completed \
+    --optimizer stable_adamw \
+    --stable-adamw-kahan-sum \
+    --stable-adamw-decouple-lr \
+    --full-megatron-model-init \
+    --wandb-project med-modern-bert-true \
+    --wandb-exp-name 251008_merged_50000 \
     --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then
@@ -346,10 +331,7 @@ HOST=`head -n 1 ${PBS_NODEFILE}`
 HOST_IP=$(getent hosts $HOST | awk '{print $1}')
 export CUDA_HOME="/work/opt/local/aarch64/cores/cuda/12.6"
 MPIRUN_OPTIONS="--hostfile ${UNIQUE_NODES_FILE} -np ${num_node} -npernode 1 --map-by node -x CUDA_HOME -x LD_LIBRARY_PATH -x PATH"
-# MPIRUN_OPTIONS はお使いのMPI実装に合わせてカスタマイズ可能です。例: OpenMPIの場合
-# MPIRUN_OPTIONS="--hostfile ${UNIQUE_NODES_FILE} -np ${num_node} --map-by node -report-bindings"
 
-# mpirunによって起動される各ノード上の ${num_node} 個のプロセスが、以下のtorchrunコマンドを実行します:
 TORCHRUN_CMD="torchrun \
     --nnodes ${num_node} \
     --nproc_per_node ${num_gpus_pernode} \

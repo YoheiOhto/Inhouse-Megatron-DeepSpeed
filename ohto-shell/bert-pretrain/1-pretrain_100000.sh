@@ -13,19 +13,18 @@ module load cudnn/9.5.1.17
 module load ompi-cuda/4.1.6-12.6
 
 source /work/gg17/a97006/.g_bashrc
-pyenv install 3.12.4 # This might take time; consider preparing an env beforehand
 pyenv local 3.12.4
 
-cd ~/env/llm-pyenv-3
+cd ~/env/llm-pyenv-4
 source ./250/bin/activate
 
-jobname="med-bert-full-100000-merged"
+jobname="med-bert-full-100000-all-merged-2560"
 
-dir='/work/gg17/a97006/250519_modern_bert_0/Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
+dir='/work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/examples_deepspeed/bert_with_pile'
 wandb login 65afaa936940cf3a198fba3da2d51b71b797b77e # Consider using environment variable WANDB_API_KEY
 ###############################################################################
 seq_len=1024
-global_batch_size=1280
+global_batch_size=2560 # 2560
 lr=8e-4
 min_lr=1e-5
 
@@ -38,13 +37,13 @@ init_std=0.02
 ############################################################################### Training duration configs
 train_iters_in_million=2
 # train_iters=$((${train_iters_in_million} * 1000000)) # 2 * 10000 = 20000
-train_iters=1000000
+train_iters=570000
 ###############################################################################
 ### lr configs
-lr_warmup_iters=35800 # これが lr_warmup_steps に対応
+lr_warmup_iters=57000 # これが lr_warmup_steps に対応
 lr_decay_iters_in_million=${train_iters_in_million} # 2
 # lr_decay_iters=$((${lr_decay_iters_in_million} * 10000)) # 2 * 10000 = 20000
-lr_decay_iters=1000000 # これが lr_decay_steps に対応
+lr_decay_iters=570000 # これが lr_decay_steps に対応
 lr_decay_style="constant"
 ####################################################
 ### Parallelism configs
@@ -94,12 +93,13 @@ if [ ${batch_size} -eq 0 ]; then
     echo "Warning: Calculated micro batch size is 0. Setting to 1. Check global_batch_size and dp_size."
     batch_size=1
 fi
+batch_size=20
 ###############################################################################
 ### Misc configs
 log_interval=1000
 eval_iters=1
 eval_interval=1000
-num_save=100
+num_save=10
 save_interval=$((${train_iters} / ${num_save}))
 activation_checkpoint="false"
 log_optimizer_state="true"
@@ -108,24 +108,9 @@ log_optimizer_state="true"
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 host="${HOSTNAME}" # This will be the hostname of the node running this script (master PBS job)
 
-# BLEND DATASET
-pubmed_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pubmed/pubmed_100000-1024/pubmed_text_sentence"
-pmc_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/pmc/pubmed_100000-1024/pmc_text_sentence"
-fda_label_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/fda_label/pubmed_100000-1024/fda_label_text_sentence"
-nih_books_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/nih_books/pubmed_100000-1024/nih_books_text_sentence"
-
-weight_pubmed=0.1785
-weight_pmc=0.7854
-weight_fda_label=0.0282
-weight_nih_books=0.0081
-
 # Combine the datasets into a single data path
-data_path="${weight_pubmed} ${pubmed_path} \
-           ${weight_pmc} ${pmc_path} \
-           ${weight_fda_label} ${fda_label_path} \
-           ${weight_nih_books} ${nih_books_path}"
-data_path="/work/gg17/a97006/250519_modern_bert_0/preprocessed/4_merged/all_merged_100000-1024/4_merged_text_sentence"
-vocab_path="/work/gg17/a97006/250519_modern_bert_0/tokenizer/vocab_100000.txt"
+data_path="/work/gg17/a97006/0-250519_modern_bert_0/251004_preprocessed/4_merged/all_merged_100000-1024/4_merged_text_sentence"
+vocab_path="/work/gg17/a97006/0-250519_modern_bert_0/251004_tokenizer/vocab_100000.txt"
 
 num_workers=4
 
@@ -138,14 +123,14 @@ if [ "${no_pp}" = "true" ]; then
 fi
 
 username=$(whoami)
-output_home="/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/${username}/project/bert_with_pile"
+output_home="/work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/${username}/project/bert_with_pile"
 # This host check might not be relevant
 if [[ "$host" == *"webxt"* ]]; then
     output_home="/blob/users/${username}/project/bert_with_pile"
 fi
 log_path="${output_home}/log/"
 checkpoint_path="${output_home}/checkpoint/${jobname}"
-tensorboard_dir="/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/${username}/project/bert_with_pile/tensorboard/"
+tensorboard_dir="/work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/${username}/project/bert_with_pile/tensorboard/"
 tensorboard_path="${tensorboard_dir}${jobname}_${host}_${current_time}" # host here refers to the master job submission host
 mkdir -p ${log_path}
 mkdir -p ${checkpoint_path}
@@ -163,7 +148,7 @@ megatron_options=" \
     --disable-bias-linear \
     --override-opt_param-scheduler \
     --adam-beta1 0.9 \
-    --adam-beta2 0.999 \
+    --adam-beta2 0.98 \
     --init-method-std ${init_std} \
     --tensor-model-parallel-size ${mp_size} \
     --lr-decay-iters ${lr_decay_iters} \
@@ -185,7 +170,7 @@ megatron_options=" \
     --eval-interval ${eval_interval} \
     --eval-iters ${eval_iters} \
     --save-interval ${save_interval} \
-    --weight-decay 1e-2 \
+    --weight-decay 1e-4 \
     --clip-grad 1.0 \
     --num-workers ${num_workers} \
     --bf16 \
@@ -203,12 +188,17 @@ megatron_options=" \
     --global-rope-theta 10000 \
     --local-rope-theta 10000 \
     --global-attn-every-n-layers 3 \
+    --ffn-hidden-size 1152 \
     --local-window-size 128 \
-    --wandb-project med-modern-bert-true \
     --use-flash-attn-v2 \
     --no-position-embedding \
-    --wandb-exp-name merged-10000-10000 \
-    --wandb-save-dir /work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
+    --optimizer stable_adamw \
+    --stable-adamw-kahan-sum \
+    --stable-adamw-decouple-lr \
+    --full-megatron-model-init \
+    --wandb-project med-modern-bert-true \
+    --wandb-exp-name 251008_merged_100000_5120 \
+    --wandb-save-dir /work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/users/a97006/project/bert_with_pile"
 
 if [ "${activation_checkpoint}" = "true" ]; then
 megatron_options="${megatron_options} \
@@ -220,16 +210,16 @@ megatron_options="${megatron_options} \
     --log-optimizer-states-to-tensorboard"
 fi
 
-template_json="/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/examples_deepspeed/bert_with_pile/ds_config_bert_TEMPLATE.json"
-config_json="/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/examples_deepspeed/bert_with_pile/ds_config_bert_bsz${global_batch_size}_mbsz${batch_size}_log${log_interval}_zero${zero_stage}.json"
+template_json="/work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/examples_deepspeed/bert_with_pile/ds_config_bert_TEMPLATE.json"
+config_json="/work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/examples_deepspeed/bert_with_pile/ds_config_bert_bsz${global_batch_size}_mbsz${batch_size}_log${log_interval}_zero${zero_stage}.json"
 if [[ $zero_stage -gt 0 ]]; then
 sed "s/CONFIG_BATCH_SIZE/${global_batch_size}/" ${template_json} \
     | sed "s/CONFIG_MBSIZE/${batch_size}/" \
     | sed "s/LOG_INTERVAL/${log_interval}/" \
     | sed "s/ZERO_STAGE/${zero_stage}/" \
     | sed "s/PRESCALE_GRAD/false/" \
-    | sed "s/CONFIG_FP16_ENABLED/false/" \
-    | sed "s/CONFIG_BF16_ENABLED/true/" \
+    | sed "s/CONFIG_FP16_ENABLED/true/" \
+    | sed "s/CONFIG_BF16_ENABLED/false/" \
       > ${config_json}
 else
 sed "s/CONFIG_BATCH_SIZE/${global_batch_size}/" ${template_json} \
@@ -237,8 +227,8 @@ sed "s/CONFIG_BATCH_SIZE/${global_batch_size}/" ${template_json} \
     | sed "s/LOG_INTERVAL/${log_interval}/" \
     | sed "s/ZERO_STAGE/${zero_stage}/" \
     | sed "s/PRESCALE_GRAD/true/" \
-    | sed "s/CONFIG_FP16_ENABLED/false/" \
-    | sed "s/CONFIG_BF16_ENABLED/true/" \
+    | sed "s/CONFIG_FP16_ENABLED/true/" \
+    | sed "s/CONFIG_BF16_ENABLED/false/" \
       > ${config_json}
 fi
 
@@ -327,7 +317,7 @@ export WANDB_DEBUG=true # Propagate this
 # `torchrun` launches `num_gpus_pernode` Python processes on that node.
 
 # Construct the command to be executed by mpirun on each node
-PYTHON_SCRIPT_PATH="/work/gg17/a97006/250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/pretrain_bert.py"
+PYTHON_SCRIPT_PATH="/work/gg17/a97006/0-250519_modern_bert_0/Inhouse-Megatron-DeepSpeed/pretrain_bert.py"
 LOG_FILE="${log_path}/${jobname}_${host}_${current_time}.log" # mpirun will pipe output here from rank 0 of its direct children
 
 echo "Master Addr: ${MASTER_ADDR}"
@@ -341,10 +331,7 @@ HOST=`head -n 1 ${PBS_NODEFILE}`
 HOST_IP=$(getent hosts $HOST | awk '{print $1}')
 export CUDA_HOME="/work/opt/local/aarch64/cores/cuda/12.6"
 MPIRUN_OPTIONS="--hostfile ${UNIQUE_NODES_FILE} -np ${num_node} -npernode 1 --map-by node -x CUDA_HOME -x LD_LIBRARY_PATH -x PATH"
-# MPIRUN_OPTIONS はお使いのMPI実装に合わせてカスタマイズ可能です。例: OpenMPIの場合
-# MPIRUN_OPTIONS="--hostfile ${UNIQUE_NODES_FILE} -np ${num_node} --map-by node -report-bindings"
 
-# mpirunによって起動される各ノード上の ${num_node} 個のプロセスが、以下のtorchrunコマンドを実行します:
 TORCHRUN_CMD="torchrun \
     --nnodes ${num_node} \
     --nproc_per_node ${num_gpus_pernode} \

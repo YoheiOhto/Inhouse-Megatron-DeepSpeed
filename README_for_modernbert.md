@@ -1,260 +1,166 @@
-# MODERN BERT in deepspeed-megatron
-## argのみで変更できること
-- mask率=30% --mask-prob 0.3
-- MLMのみでの実行 --bert-no-binary-head をつける
-- preLN --apply-residual-connection-post-layernorm をつけない
+# ModernBERT (DeepSpeed + Megatron)
 
-## モデルの初期化関数  
-- [ModernBERTでは切断正規分布](https://github.com/AnswerDotAI/ModernBERT/blob/main/src/bert_layers/initialization.py) full_megatronが選択されている  
+この文書は、DeepSpeed / Megatron 環境で定義された ModernBERT の設計方針とトレーニング設定（拡張前フェーズ）をまとめたものです。
+
+## 1. アーキテクチャ改善（概要）
+
+- バイアスの取り扱い
+  - 全ての Linear 層: bias を無効化
+  - LayerNorm: bias を無効化
+  - Decoder（最終線形層）: bias は残す
+
+- 位置表現
+  - RoPE（Rotary Positional Embedding）を使用
+  - 現段階では標準的な θ を利用（後続の更新とは区別）
+
+- 正規化構造
+  - Pre-Norm Transformer（Attention / MLP の前に LayerNorm）
+  - Embedding の直後にも LayerNorm を追加（初期 LayerNorm との重複を排除）
+
+- 活性化関数
+  - GeGLU（Gated Linear Units）を採用
+
+### 実装チェックリスト (アーキテクチャ)
+- 全 Linear バイアスの取り扱い — 実装箇所: 
+    ``` shell
+        group.add_argument('--disable-bias-linear', action='store_false',
+                       help='Disable bias in the linear layers',
+                       dest='add_bias_linear')
+    ```
+- [ ] 全 LayerNorm バイアスの取り扱い — 実装箇所: _______________________
+- [ ] 全 Decoder バイアスの取り扱い — 実装箇所: _______________________
+- [ ] RoPE の導入 (位置表現) — 実装箇所: _______________________
+- [ ] Pre-Norm Transformer 構造 — 実装箇所:--apply-residual-connection-post-layernorm を 指定しない（False）
+- [ ] Embedding 後の LayerNorm 追加 — 実装箇所:
+    ``` shell
+        group.add_argument('--layernorm-embedding', action='store_true',
+                       help='If set, use layernorm on the input embeddings. '
+                       'This is useful for training BERT-like models.')
+    ```
+- [ ] GeGLU の採用 (MLP) — 実装箇所: _______________________
+
+## 2. 注意機構と効率化
+
+- Alternating Attention（交互注意）
+  - 層ごとに Global Attention と Local Attention を交互に切替
+  - Local Attention: スライディングウィンドウ（window = 128）
+  - Global Attention: 全トークン間の自己注意
+
+- Unpadding（パディング除去）
+  - Embedding 前に入力のパディングを除去して計算を効率化
+  - Flash Attention と組み合わせて jagged attention を実現
+  - 出力側で必要に応じて再パディング（re-padding）を行う
+
+- Flash Attention の使い分け
+  - Global attention → Flash Attention v3
+  - Local attention → Flash Attention v2
+
+- PyTorch コンパイル
+  - `torch.compile` を使うことで約 10% のスループット改善を確認
+
+### 実装チェックリスト (注意機構 / 効率化)
+- [ ] Alternating Attention (Global / Local の切替) — 実装箇所: _______________________
+- [ ] Local Attention (window=128, スライディングウィンドウ) — 実装箇所: _______________________
+- [ ] Unpadding (入力のパディング削除) — 実装箇所: _______________________
+- [ ] jagged attention / Flash Attention 統合 — 実装箇所: _______________________
+- [ ] Flash Attention v2 / v3 の割当 (Local/Global) — 実装箇所: _______________________
+- `torch.compile` 最適化の適用場所 — 実装箇所: 実装していない
+
+## 3. モデル設計（base モデル）
+
+- アーキテクチャ: Deep & Narrow
+  - 層数（num_layers）: 22
+  - 隠れ次元（hidden_size）: 768
+  - MLP（GeGLU）拡張（intermediate_size）: 2304
+
+- ハードウェア最適化
+  - Tensor Core のタイル効率を意識した hidden / expansion の設計
+
+### 実装チェックリスト (モデル設計)
+- 層数・隠れ次元・MLP 拡張の設定 (config / CLI / code) — 実装箇所: 実行commandで指定
+- Tensor Core 最適化パラメータの反映 (ブロックサイズ / データ配置) — 実装箇所: 実装していない
+## 4. トークナイザ
+
+- BPE ベースのトークナイザ（OLMo 派生）を使用（WordPiece ではない）
+- 語彙サイズ: 50,368（GPU でのバッチ処理最適化のため 64 の倍数に調整）
+- BERT 互換の特殊トークン（CLS/SEP/PAD 等）を利用
+
+### 実装チェックリスト (トークナイザ)
+- BPE トークナイザ定義 (学習 / ロード) — 実装箇所: 実装していない 各実行commandで指定 vocab_pathに使用するvocabを作成する段階でBPEにすればよい  
+- 語彙サイズ（50,368）の設定箇所 — 実装箇所: 各実行commandで指定 vocab_pathに使用するvocabのファイルを設定すればよい     
+- 特殊トークンのマッピング (CLS/SEP/PAD 等) — 実装箇所: 勝手に実装される    
+
+## 5. トレーニング設定（拡張前フェーズ）
+
+- Pretraining データ
+  - 規模: 約 2 兆トークン（Web、コード、学術文献などの混合コーパス）
+
+- Sequence Packing
+  - Greedy packing を用い高効率にシーケンスを詰める（≈99% のパディング効率を目標）
+
+- マスクド言語モデリング（MLM）
+  - MLM のみを使用（NSP は行わない）
+  - マスク率: 約 30%（BERT の 15% と比べ高め）
+
+- 最適化
+  - Optimizer: StableAdamW（AdamW と Adafactor スタイルの安定化/クリップを組み合わせた手法）
+  - 学習率スケジュール: WSD（Warmup → Stable → Decay）
+    - Warmup → 一定区間（Stable）→ 線形減衰（Decay）
+
+- バッチサイズスケジューリング
+  - トレーニング初期は小さいバッチサイズから始め、段階的に増加
+
+### 実装チェックリスト (トレーニング設定)
+- [ ] データセット読み込み / Pretraining コーパス設定 — 実装箇所: _______________________
+- [ ] Sequence Packing 実装 (Greedy packing) — 実装箇所: _______________________
+- NSP を行わない設定 — 実装箇所: 各実行commandで指定  
+    ``` shell
+    group.add_argument('--bert-no-binary-head', action='store_false',
+                       help='Disable BERT binary head.',
+                       dest='bert_binary_head')
+    ```
+- MLM マスク率 30% の実装箇所 — 実装箇所: 各実行commandで指定  
+    ``` shell
+        group.add_argument('--mask-prob', type=float, default=0.15,
+                        help='Probability of replacing a token with mask.')
+    ```
+- Optimizer: StableAdamW の実装/設定箇所 — 実装箇所: megatron/optimizer/__init__.py  
+--optimizer stable_adamw を指定すれば使える  
   
-### 実装方法  
-- megatron/model/initialization.py に実装コード
-    - 各層にmoduleを付与
-    - "--full-megarton-model-init" model構築後に再度weightを与えなおす  
-    - 現在の実装では megatron/model/bert_model.py の内部のみに適用するようにしている
-    - また、+-2σは実装内で固定している
+- 学習率スケジュール WSD の実装箇所 — 実装箇所: 実装していない      
+    実行commandでconstatを指定することで、decay前までを実現。その後、そのcheckpointを指定して、commandで --finetuneとdecayを指定することで再現できる。
+- バッチサイズスケジューリングのロジック — 実装箇所: 各実行commandで指定  
+    ``` shell
+        group.add_argument('--rampup-batch-size', nargs='*', default=None,
+                       help='Batch size ramp up with the following values:'
+                       '  --rampup-batch-size <start batch size> '
+                       '                      <batch size incerement> '
+                       '                      <ramp-up samples> '
+                       'For example:'
+                       '   --rampup-batch-size 16 8 300000 \ '
+                       '   --global-batch-size 1024'
+                       'will start with global batch size 16 and over '
+                       ' (1024 - 16) / 8 = 126 intervals will increase'
+                       'the batch size linearly to 1024. In each interval'
+                       'we will use approximately 300000 / 126 = 2380 samples.')
+    ```
 
-## モデルの構成 (確認)
-```python
-    config = AutoConfig.from_pretrained("answerdotai/ModernBERT-base")
-    model = AutoModelForMaskedLM.from_config(config)
-    print(model)
+## 6. 初期化
 
-    ModernBertForMaskedLM(
-    (model): ModernBertModel(
-        (embeddings): ModernBertEmbeddings(
-        (tok_embeddings): Embedding(50368, 768, padding_idx=50283)
-        (norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
-        (drop): Dropout(p=0.0, inplace=False)
-        )
-        (layers): ModuleList(
-        (0): ModernBertEncoderLayer(
-            (attn_norm): Identity()
-            (attn): ModernBertAttention(
-            (Wqkv): Linear(in_features=768, out_features=2304, bias=False)
-            (rotary_emb): ModernBertRotaryEmbedding()
-            (Wo): Linear(in_features=768, out_features=768, bias=False)
-            (out_drop): Identity()
-            )
-            (mlp_norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
-            (mlp): ModernBertMLP(
-            (Wi): Linear(in_features=768, out_features=2304, bias=False)
-            (act): GELUActivation()
-            (drop): Dropout(p=0.0, inplace=False)
-            (Wo): Linear(in_features=1152, out_features=768, bias=False)
-            )
-        )
-        (1-21): 21 x ModernBertEncoderLayer(
-            (attn_norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
-            (attn): ModernBertAttention(
-            (Wqkv): Linear(in_features=768, out_features=2304, bias=False)
-            (rotary_emb): ModernBertRotaryEmbedding()
-            (Wo): Linear(in_features=768, out_features=768, bias=False)
-            (out_drop): Identity()
-            )
-            (mlp_norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
-            (mlp): ModernBertMLP(
-            (Wi): Linear(in_features=768, out_features=2304, bias=False)
-            (act): GELUActivation()
-            (drop): Dropout(p=0.0, inplace=False)
-            (Wo): Linear(in_features=1152, out_features=768, bias=False)
-            )
-        )
-        )
-        (final_norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
-    )
-    (head): ModernBertPredictionHead(
-        (dense): Linear(in_features=768, out_features=768, bias=False)
-        (act): GELUActivation()
-        (norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
-    )
-    (decoder): Linear(in_features=768, out_features=50368, bias=True)
-    )
-```
-```python
-    print(model) # debug用にpretrain関数の内部で実行
+- モデル初期化: Megatron の初期化処理を利用
+- base モデルはランダム初期化で開始
 
-    [DeepSpeedEngine(
-    (module): BertModel(
-        (language_model): TransformerLanguageModel(
-        (embedding): Embedding(
-            (word_embeddings): VocabParallelEmbedding()
-            (embedding_dropout): Dropout(p=0.1, inplace=False)
-        )
-        (embedding_layernorm): MixedFusedLayerNorm()
-        (encoder): ParallelTransformer(
-            (layers): ModuleList(
-            (0-21): 22 x ParallelTransformerLayer(
-                (input_layernorm): MixedFusedLayerNorm()
-                (self_attention): ParallelAttention(
-                (rotary_pos_emb): RotaryEmbedding()
-                (query_key_value): ColumnParallelLinear()
-                (core_attention): CoreAttention(
-                    (scale_mask_softmax): FusedScaleMaskSoftmax()
-                    (attention_dropout): Dropout(p=0.1, inplace=False)
-                )
-                (dense): RowParallelLinear()
-                )
-                (post_attention_layernorm): MixedFusedLayerNorm()
-                (mlp): ParallelMLP(
-                (dense_h_to_4h): ColumnParallelLinear()
-                (dense_4h_to_h): RowParallelLinear()
-                )
-            )
-            )
-            (final_layernorm): MixedFusedLayerNorm()
-        )
-        )
-        (lm_head): BertLMHead(
-        (dense): Linear(in_features=768, out_features=768, bias=True)
-        (layernorm): MixedFusedLayerNorm()
-        )
-    )
-    )]
-```
-***(decoder): Linear(in_features=768, out_features=50368, bias=True)***の有無に実装の差がでる 
-```python
-def get_linear_layer(rows, columns, init_method, gather_params_on_init=False):
-    """Simple linear layer with weight initialization."""
-    args = get_args()
-    layer = torch.nn.Linear(rows, columns, bias=args.add_bias_linear)
-    if get_args().perform_initialization:
-        with GatheredParameters(layer.weight, modifier_rank=0, enabled=gather_params_on_init):
-            init_method(layer.weight)
-    if args.add_bias_linear:
-        with torch.no_grad():
-            with GatheredParameters(layer.bias, modifier_rank=0, enabled=gather_params_on_init):
-                layer.bias.zero_()
-    return layer
-```
+### 実装チェックリスト (初期化)
+- [ ] Megatron 初期化の呼び出し箇所 (例: `initialize_megatron`) — 実装箇所: _______________________
+- [ ] ランダム初期化が適用されるコード箇所 — 実装箇所: _______________________
 
-  
+## 7. 注釈 / 注意点
 
-    
-## バイアス項の無効化
-| 対象モジュール | バイアスの有無 | 理由 |
-|-----|-----|-----|
-| Attention & MLP内の全線形層 | なし (bias=False) | 論文の指示 |
-| 全てのLayerNorm層 | なし (bias=False) | 論文の指示 |
-| BertLMHeadの最終出力 | あり (bias=True) | 論文で唯一の例外 |
+- 上記は拡張前（base）段階の設計と実装方針です。拡張や最適化を進めるにあたり、RoPE の細かなパラメータや Flash Attention のバージョン選定、トークナイザの語彙最適化などは再評価され得ます。
+- 実装・実験時はハードウェア（GPU 世代、Tensor Core の仕様）に合わせてパラメータ調整を行ってください。
 
-### 線形層における実装
-* --disable-bias-linear の設定で実装可能
-
-### LayerNorm層における実装
-```python
-# from .fused_layer_norm import MixedFusedLayerNorm as LayerNorm
-if self.train_bias: # default train_bias == False
-    self.bias = Parameter(torch.empty(*normalized_shape,
-                                        device=init_device,
-                                        dtype=get_args().params_dtype))
-else:
-    print("WARNING: FusedLayerNorm is created without bias parameter.")
-    self.register_buffer('bias', torch.zeros(*normalized_shape,
-                                                device=init_device,
-                                                dtype=get_args().params_dtype))
-```
-
-### BertLMHeadの最終出力
-```python
-self.layernorm = LayerNorm(hidden_size,
-                            eps=config.layernorm_epsilon,
-                            sequence_parallel=config.sequence_parallel,
-                            train_bias=True)
-```
-
-## GeGLUの実装
-megatron/model/transformer.py  
-ここでgegluを定義して呼び出し  
-```python
-elif args.geglu:
-    def geglu(x):
-        x = torch.chunk(x, 2, dim=-1)
-        return F.gelu(x[0]) * x[1]
-    self.activation_func = geglu
-    print("Using GEGLU activation function")
-```
-arguments.pyにも定義  
-```python
-def core_transformer_config_from_args(args):
-    if args.geglu:
-        kw_args['activation_func'] = F.gelu
-        kw_args['gated_linear_unit'] = True
-        kw_args['bias_gelu_fusion'] = False
-```
-
-## grobal - local attention
-megatron/model/transformer.py class ParallelTransformerLayer(MegatronModule): 
-```python
-is_global_attention = True
-if args.use_switch_attention:
-    if layer_number % args.global_attn_every_n_layers != 0:
-        is_global_attention = False
-print(f"Layer {self.layer_number}: "
-        f"use_switch_attention={args.use_switch_attention}, "
-        f"is_global={is_global_attention}")
-```
-
-## local attention - sliding window
-megatron/model/transformer.py class ParallelAttention(MegatronModule)  
-ParallelTransformerLayerの内部で呼び出されている  
-```python
-if not self.is_global_attention:
-
-    seq_len_q = hidden_states.size(0)
-    seq_len_k = hidden_states.size(0) 
-    window_size = self.local_window_size
-    q_indices = torch.arange(seq_len_q, device=hidden_states.device).view(-1, 1)
-    k_indices = torch.arange(seq_len_k, device=hidden_states.device).view(1, -1)
-    
-    relative_indices = k_indices - q_indices
-    local_mask = (relative_indices >= -window_size) & (relative_indices <= window_size)
-    attention_mask = attention_mask & local_mask.unsqueeze(0).unsqueeze(0)
-```  
-
-
-## global - local rope
-megatron/model/transformer.py class ParallelAttention(MegatronModule)  
-ParallelTransformerLayerの内部で呼び出されている    
-```python
-if self.use_switch_attention_rope:
-    if self.is_global_attention:
-        theta = args.global_rope_theta
-    else:
-        theta = args.local_rope_theta
-    rotary_dim = config.kv_channels
-    if args.rotary_percent < 1.0:
-        rotary_dim = int(rotary_dim * args.rotary_percent)
-    self.rotary_pos_emb = RotaryEmbedding(rotary_dim, theta=theta)
-```
-*transformer_impl == 'local'* 以外を設定しない!
-
-## optimizerの実装
-https://github.com/warner-benjamin/optimi  
-このstable adam Wを使用する  
-megatron/optimizer/__init__.py
-```python
-elif args.optimizer == 'stable_adamw':
-    optimi_param_groups = []
-    for group in param_groups:
-        new_group = {
-            'params': group['params'],
-            'weight_decay': args.weight_decay * group.get('wd_mult', 1.0)
-        }
-        if group.get('lr_mult', 1.0) != 1.0:
-            new_group['lr'] = args.lr * group.get('lr_mult')
-        optimi_param_groups.append(new_group)
-    optimizer = StableAdamW(optimi_param_groups,
-                            lr=args.lr,
-                            weight_decay=args.weight_decay,
-                            betas=(args.adam_beta1, args.adam_beta2),
-                            eps=args.adam_eps,
-                            decouple_lr=args.stable_adamw_decouple_lr,
-                            max_lr=args.lr if args.stable_adamw_decouple_lr else None,
-                            kahan_sum=args.stable_adamw_kahan_sum,
-                            triton=False,
-                            foreach=True
-                            )
-```
-
-  
+### 実装チェックリスト (その他 / 運用)
+- [ ] RoPE のパラメータ（θ など）の設定箇所 — 実装箇所: _______________________
+- [ ] Flash Attention のバージョン選定／依存関係管理 — 実装箇所: _______________________
+- [ ] 実験ログと学習曲線の出力場所 (ログ形式 / 保存先) — 実装箇所: _______________________
+- [ ] 設定ファイル（YAML / JSON / CLI 引数）の場所 — 実装箇所: _______________________
